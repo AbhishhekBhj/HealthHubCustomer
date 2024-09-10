@@ -1,0 +1,1 @@
+const String welcomeMessage = "Welcome to Health Hub"; 

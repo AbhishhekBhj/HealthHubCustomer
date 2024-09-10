@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1053092729115",
+    "project_id": "healthhubcustomer",
+    "storage_bucket": "healthhubcustomer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053092729115:android:1d7c97c92556ea58a303be",
+        "android_client_info": {
+          "package_name": "com.app.healthhubcustomer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtTC-hd1IABSV-n9_ZXRC1pv3ONpXMH-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
