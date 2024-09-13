@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:healthhubcustomer/View/OnBoarding/onboarding_base.dart';
 import 'package:healthhubcustomer/utils/app_constants.dart';
+import 'package:healthhubcustomer/utils/custom_textStyles.dart';
+import 'package:healthhubcustomer/utils/shared_preference_helper.dart';
 
 import 'View/Auth/login/login_page.dart';
 import "dart:developer";
+
+import 'View/Auth/signup/signup_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,6 +21,9 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+
+
+  SharedPreferenceHelper _sharedPreferenceHelper = SharedPreferenceHelper();
 
   @override
   void initState() {
@@ -30,6 +38,8 @@ class _SplashScreenState extends State<SplashScreen>
       parent: _controller,
       curve: Curves.easeInOut,
     );
+
+     navigateFromSplashScreen();
   }
 
   @override
@@ -40,59 +50,41 @@ navigateFromSplashScreen();
     super.dispose();
   }
 
-  navigateFromSplashScreen(){
-    log("Navigate to login page");
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.to(() => const LoginPage());
-    });
+  navigateFromSplashScreen() async
+  {
+    var hasSeen = await _sharedPreferenceHelper.getUserHasSeenOnboarding();
+    var hasLogin = await _sharedPreferenceHelper.getUserLoggedIn();
+
+    if (hasSeen) {
+      if (hasLogin) {
+        Get.offAll(() => LoginPage());
+      } else {
+        Get.offAll(() => SignUpMainPage());
+      }
+    } else {
+      Get.offAll(() => OnboardingBase());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ScaleTransition(
-                scale: _animation,
-                child: const Icon(
-                  Icons.local_florist,
-                  size: 80,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                welcomeMessage,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Loading...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
+    return  Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+
+            // Text(appName, style: interBold(color: Colors.black, fontSize: 25 ),)
+            SlideTransition(
+  position: Tween<Offset>(
+    begin: const Offset(0, 1),  // Start from bottom
+    end: Offset.zero,  // Move to center
+  ).animate(_animation),
+  child: Text(appName, style: interBold(color: Colors.black, fontSize: 25)),
+)
+
+          
+          ],
         ),
       ),
     );

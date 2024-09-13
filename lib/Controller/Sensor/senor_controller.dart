@@ -14,25 +14,24 @@ class _StepCounterPageState extends State<StepCounterPage> {
   double _x = 0.0;
   double _y = 0.0;
   double _z = 0.0;
+  double _gyroX = 0.0;
+  double _gyroY = 0.0;
+  double _gyroZ = 0.0;
   int _stepCount = 0;
+  int initialSteps = 0;
 
-  // Parameters for step detection
   double _lastMagnitude = 0.0;
-  double _threshold = 100.0; // Threshold for peak detection
-  double _smoothingFactor = 0.5; // For smoothing the magnitude data
+  double _threshold = 0.1;
+  double _alpha = 0.95;
+  int _bufferSize = 50;
+
   List<double> _magnitudeBuffer = [];
-  int _bufferSize = 25;
-
   StreamSubscription<UserAccelerometerEvent>? _accelerometerSubscription;
+  StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
+  final StreamController<int> _stepCountController = StreamController<int>.broadcast();
 
-  Stream<int> get stepCount => Stream<int>.value(_stepCount);
-
-  StreamController<int> _stepCountController = StreamController<int>.broadcast();
-
-
-  
-
-  
+  DateTime? _lastStepTime;
+  final Duration _debounceDuration = Duration(milliseconds: 300);
 
   @override
   void initState() {
@@ -41,55 +40,67 @@ class _StepCounterPageState extends State<StepCounterPage> {
   }
 
   void _startListening() {
-    try {
-      _accelerometerSubscription = userAccelerometerEventStream().listen((UserAccelerometerEvent event) {
-        setState(() {
-          _x = event.x;
-          _y = event.y;
-          _z = event.z;
+    _accelerometerSubscription = userAccelerometerEventStream().listen((event) {
+      _x = event.x;
+      _y = event.y;
+      _z = event.z;
 
+      double magnitude = sqrt(_x * _x + _y * _y + _z * _z);
+      _magnitudeBuffer.add(magnitude);
+      if (_magnitudeBuffer.length > _bufferSize) {
+        _magnitudeBuffer.removeAt(0);
+      }
 
-double magnitude = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
-          // Calculate the magnitude of the acceleration vector
-          
+      double avg = _magnitudeBuffer.reduce((a, b) => a + b) / _magnitudeBuffer.length;
+      double delta = magnitude - avg;
+      _lastMagnitude = _alpha * _lastMagnitude + (1 - _alpha) * delta;
 
-          // Apply smoothing
-          if (_magnitudeBuffer.length >= _bufferSize) {
-            _magnitudeBuffer.removeAt(0);
-          }
-          _magnitudeBuffer.add(magnitude);
+      _checkForStep();
+    });
 
-          double smoothedMagnitude = _magnitudeBuffer.reduce((a, b) => a + b) / _magnitudeBuffer.length;
+    _gyroscopeSubscription = gyroscopeEvents.listen((event) {
+      _gyroX = event.x;
+      _gyroY = event.y;
+      _gyroZ = event.z;
 
-          // Detect peaks
-          if ((smoothedMagnitude - _lastMagnitude) < _threshold) {
-            _stepCount++;
-            _stepCountController.add(_stepCount); // Emit new step count to the stream
+      // Additional processing of gyroscope data can be done here
+    });
+  }
 
-          }
-          else{
-            dev.log('${smoothedMagnitude - _lastMagnitude}');
-            dev.log('Threshold: $_threshold');
-          }
-          
-          
+  void _checkForStep() {
+    DateTime now = DateTime.now();
 
-          _lastMagnitude = smoothedMagnitude;
-        });
-      });
-    } catch (e) {
-      dev.log('Error starting sensor listening: $e');
+    if (_lastMagnitude > _threshold && (_lastStepTime == null || now.difference(_lastStepTime!) > _debounceDuration)) {
+      _stepCount++;
+      _stepCountController.add(_stepCount);
+      _lastStepTime = now;
     }
   }
 
   @override
   void dispose() {
-    try {
-      _accelerometerSubscription?.cancel();
-    } catch (e) {
-      dev.log('Error canceling sensor subscription: $e');
-    }
+    _accelerometerSubscription?.cancel();
+    _gyroscopeSubscription?.cancel();
+    _stepCountController.close();
     super.dispose();
+  }
+
+  void _updateThreshold(double newValue) {
+    setState(() {
+      _threshold = newValue;
+    });
+  }
+
+  void _updateAlpha(double newValue) {
+    setState(() {
+      _alpha = newValue;
+    });
+  }
+
+  void _updateBufferSize(double newValue) {
+    setState(() {
+      _bufferSize = newValue.toInt();
+    });
   }
 
   @override
@@ -105,36 +116,90 @@ double magnitude = sqrt(event.x * event.x + event.y * event.y + event.z * event.
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'X: ${_x.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 24),
-            ),
-            Text(
-              'Y: ${_y.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 24),
-            ),
-            Text(
-              'Z: ${_z.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 24),
+              'Step Counter',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
-
             StreamBuilder<int>(
-              stream: stepCount,
+              stream: _stepCountController.stream,
               builder: (context, snapshot) {
-               if (snapshot.hasData) {
-                dev.log('Step count: ${snapshot.data}');
+                if (snapshot.hasData) {
+                  dev.log('Step count: ${snapshot.data}');
                   return Text(
-                    'Step count: ${snapshot.data}',
-                    style: TextStyle(fontSize: 24),
+                    'Step Count: ${snapshot.data}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 24),
                   );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  return Text('Connection has been closed');
+                } else if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Text('Steps: ${initialSteps}');
                 } else {
                   return CupertinoActivityIndicator();
                 }
               },
             ),
+            SizedBox(height: 32),
+            _buildCalibrationControls(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCalibrationControls() {
+    return Column(
+      children: [
+        Text('Calibration Controls', style: Theme.of(context).textTheme.bodySmall),
+        SizedBox(height: 16),
+        _buildSlider(
+          title: 'Threshold',
+          value: _threshold,
+          min: 0.0,
+          max: 1.0,
+          onChanged: (value) => _updateThreshold(value),
+        ),
+        SizedBox(height: 16),
+        _buildSlider(
+          title: 'Alpha',
+          value: _alpha,
+          min: 0.0,
+          max: 1.0,
+          onChanged: (value) => _updateAlpha(value),
+        ),
+        SizedBox(height: 16),
+        _buildSlider(
+          title: 'Buffer Size',
+          value: _bufferSize.toDouble(),
+          min: 10.0,
+          max: 100.0,
+          onChanged: (value) => _updateBufferSize(value),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSlider({
+    required String title,
+    required double value,
+    required double min,
+    required double max,
+    required ValueChanged<double> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.bodySmall),
+        Slider(
+          value: value,
+          min: min,
+          max: max,
+          divisions: 100,
+          onChanged: onChanged,
+        ),
+        Text(value.toStringAsFixed(2)),
+      ],
     );
   }
 }
