@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/View/Auth/signup/signup_page.dart';
 import 'package:healthhubcustomer/View/widgets/buttons/healthhub_custom_button.dart';
 import 'package:healthhubcustomer/View/widgets/textfields/custom_textfield.dart';
@@ -22,6 +22,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
+
+  
 
   bool isObscure = true;
   late AnimationController _controller;
@@ -58,6 +60,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+
+    final height = MediaQuery.of(context).size.height;;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -114,8 +118,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             FadeTransition(
               opacity: _animation,
               child: HealthhubCustomButton(
-                textColor: Colors.white,
-                height: Get.height * 0.05,
+                textColor: appWhiteColor,
+                
+                height: height * 0.05,
                 onPressed: () {},
                 backgroundColor: appMainColor,
                 borderRadius: 10,
@@ -156,7 +161,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               child: HealthhubCustomButton(
                 onPressed: signIn,
                 backgroundColor: Colors.grey.shade200,
-                height: Get.height * 0.07,
+                height: height * 0.07,
                 text: "Continue with Google",
                 textColor: Colors.black,
                 borderRadius: 12,
@@ -176,7 +181,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   TextButton(
                     onPressed: () {
 
-                      Get.offAll(const SignUpMainPage());
+                      // Get.offAll(const SignUpMainPage());
+
+                      context.pushNamed('signup');
 
                     },
                     child: const Text('Sign Up', style: TextStyle(
@@ -196,7 +203,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
 
   Future<void> signIn() async{
-   UserCredential? credential =  await signInWithGoogle();
+   UserCredential? credential =  await signInWithGoogle(context: context);
 
   }
 }

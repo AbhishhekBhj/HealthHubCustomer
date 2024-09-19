@@ -12,7 +12,20 @@
           "package_name": "com.app.healthhubcustomer"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1053092729115-kvc63atsejv0jotgfjdnd1fm8k4ntj1d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.healthhubcustomer",
+            "certificate_hash": "59e50e3cd8b5d78a84abf7c5863b7b9d495821cb"
+          }
+        },
+        {
+          "client_id": "1053092729115-ture26kfren4vmmgfki84beb7ahqetr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAtTC-hd1IABSV-n9_ZXRC1pv3ONpXMH-M"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1053092729115-ture26kfren4vmmgfki84beb7ahqetr3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1053092729115-qse7tkhjkfdhph235kuh8k7fatkor5jd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.healthhubcustomer"
+              }
+            }
+          ]
         }
       }
     }

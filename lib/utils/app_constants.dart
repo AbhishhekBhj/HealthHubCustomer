@@ -19,3 +19,26 @@ const String onboard3SubLogo = "There is no instant way to a healthy life";
 
 const String isUserLogin = 'isUserLogin';
 const String saveUserSeenOnboarding = 'saveUserHasSeenOnboarding';
+
+const String saveSelectedWalletSkinId = 'saveSelectedWalletSkinId';
+
+
+//text String
+
+const referAndEarnText = '''
+Invite your friends to join our platform and earn rewards!
+For every friend who signs up and makes their first purchase, you'll receive a special bonus.
+Simply share your referral code or link, and start earning today.Your rewards await – the more you refer, the more you earn!
+''';
+
+
+
+
+
+//images String
+
+const String logo = 'assets/images/healthhublogo.png';
+
+
+
+

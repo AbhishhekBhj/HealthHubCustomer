@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/View/OnBoarding/onboarding_base.dart';
 import 'package:healthhubcustomer/utils/app_constants.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
@@ -46,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _controller.dispose();
 
-navigateFromSplashScreen();
     super.dispose();
   }
 
@@ -55,14 +54,25 @@ navigateFromSplashScreen();
     var hasSeen = await _sharedPreferenceHelper.getUserHasSeenOnboarding();
     var hasLogin = await _sharedPreferenceHelper.getUserLoggedIn();
 
+     if (!mounted) return;  
+
     if (hasSeen) {
+      log("Seen");
       if (hasLogin) {
-        Get.offAll(() => LoginPage());
+        log("MainHome");
+        context.pushNamed('mainhome');
       } else {
-        Get.offAll(() => SignUpMainPage());
+
+        log("Signup");
+
+        context.pushNamed('signup');
+
+        // Get.offAll(() => SignUpMainPage());
       }
     } else {
-      Get.offAll(() => OnboardingBase());
+      log("Onboarding");
+      // Get.offAll(() => OnboardingBase());
+      context.pushNamed('onboarding');
     }
   }
 
@@ -80,7 +90,7 @@ navigateFromSplashScreen();
     begin: const Offset(0, 1),  // Start from bottom
     end: Offset.zero,  // Move to center
   ).animate(_animation),
-  child: Text(appName, style: interBold(color: Colors.black, fontSize: 25)),
+  child: Image.asset(logo, height: 100, width: 100, fit: BoxFit.contain),
 )
 
           

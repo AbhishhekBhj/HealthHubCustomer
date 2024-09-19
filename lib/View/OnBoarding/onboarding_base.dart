@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:healthhubcustomer/View/Auth/login/login_page.dart';
-import 'package:healthhubcustomer/View/Auth/signup/signup_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/View/OnBoarding/onboarding1.dart';
 import 'package:healthhubcustomer/View/OnBoarding/onboarding2.dart';
 import 'package:healthhubcustomer/View/widgets/buttons/healthhub_custom_button.dart';
@@ -36,6 +34,8 @@ final List<Widget> _onboardingPages = [
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;;
+    var width = MediaQuery.of(context).size.width;;
     return SafeArea(
       child: Scaffold(
       
@@ -44,7 +44,7 @@ final List<Widget> _onboardingPages = [
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                height: Get.height*0.25,
+                height: height*0.25,
                 child: PageView.builder(itemBuilder: (context, index) {
                   return _onboardingPages[index];
                 },
@@ -61,8 +61,8 @@ final List<Widget> _onboardingPages = [
               ),
                 
               SizedBox(
-                height: Get.height*0.01,
-                width: Get.width*0.2,
+                height: height*0.01,
+                width: width*0.2,
                 child: LinearProgressIndicator(
                 
                   value: (_currentPage + 1) / _onboardingPages.length,
@@ -72,14 +72,14 @@ final List<Widget> _onboardingPages = [
               ),
 
                Container(
-          height: Get.height*0.1,
-          width: Get.width*0.65,
+          height: height*0.1,
+          width: width*0.65,
           
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: HealthhubCustomButton(
             borderRadius: 12,
             backgroundColor: appMainColor,
-            textColor: Colors.white,
+            textColor: appWhiteColor,
             text: _currentPage < _onboardingPages.length - 1 ? 'Next' : 'Get Started',
             onPressed: ()  {
               if (_currentPage < _onboardingPages.length - 1) {
@@ -90,7 +90,8 @@ final List<Widget> _onboardingPages = [
               } else {
                 _sharedPreferenceHelper.saveUserHasSeenOnboarding(true);
 
-                Get.offAll(() => const SignUpMainPage());
+                // Get.offAll(() => const SignUpMainPage());
+                context.pushNamed('signup');
               }
             },
           ),

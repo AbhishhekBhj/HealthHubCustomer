@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/Controller/functions/image_custom_picker.dart';
 import 'package:healthhubcustomer/Model/activity_levels.dart';
 import 'package:healthhubcustomer/Model/genders.dart';
@@ -77,6 +77,7 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -89,6 +90,8 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+
+                     SizedBox(height: 20),
                     Text(
                       "Almost there!",
                       style: interBold(color: appMainColor, fontSize: 30),
@@ -226,14 +229,17 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                       isBorder: true,
                     ),
 
+                    const SizedBox(height: 20),
+
                     HealthhubCustomButton(
-                    height: Get.height * 0.05,
+                    height: height * 0.05,
                     text: 'Continue',
                     onPressed: () {
-                      Get.to(() => const Signup3());
+                      // Get.to(() => const Signup3());
+                      context.pushNamed('signup3');
                     },
                     backgroundColor: appMainColor,
-                    textColor: Colors.white,
+                    textColor: appWhiteColor,
                     borderRadius: 12,
                   ),
                   ],

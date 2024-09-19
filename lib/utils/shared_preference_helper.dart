@@ -24,5 +24,16 @@ class SharedPreferenceHelper{
     return prefs.getBool('saveUserLoggedIn') ?? false;
   }
 
+
+  void saveSelectedWalletSkinId(int id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('saveSelectedWalletSkinId', id);
+  }
+
+  Future<int> getSelectedWalletSkinId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('saveSelectedWalletSkinId') ?? 1;
+  }
+
   
 }

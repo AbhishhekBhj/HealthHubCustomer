@@ -1,11 +1,14 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:healthhubcustomer/View/widgets/alerts/custom_snackbar.dart';
+import 'package:healthhubcustomer/colors/colors.dart';
 
-Future<UserCredential?> signInWithGoogle() async {
+Future<UserCredential?> signInWithGoogle({required BuildContext context}) async {
   log("Google Sign In Clicked");
   try {
     GoogleSignInAccount? googleSignInAccount = await GoogleSignIn().signIn();
@@ -34,7 +37,7 @@ Future<UserCredential?> signInWithGoogle() async {
     }
   } catch (e) {
 
-    Get.snackbar('Error', 'Unexpected error: $e');
+   customSnackBar(context:context , message: e.toString(), snackBarColor: appErrorColor, textColor: appWhiteColor);
 
     log('Unexpected error: $e');
     rethrow;

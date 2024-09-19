@@ -1,10 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:healthhubcustomer/Controller/functions/image_custom_picker.dart';
+import 'package:go_router/go_router.dart';
+import 'package:healthhubcustomer/colors/colors.dart';
+import 'package:healthhubcustomer/utils/utils.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../../Controller/functions/image_custom_picker.dart';
 import '../../../Model/fitness_goals.dart';
 import '../../../Model/fitness_levels.dart';
+import '../../../utils/custom_textStyles.dart';
+import '../../widgets/buttons/healthhub_custom_button.dart';
 
 class Signup3 extends StatefulWidget {
   const Signup3({super.key});
@@ -13,222 +19,270 @@ class Signup3 extends StatefulWidget {
   State<Signup3> createState() => _Signup3State();
 }
 
-class _Signup3State extends State<Signup3> {
+class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
   List<File> beforePhotos = [];
+  FitnessGoal selectedGoal =
+      FitnessGoal(id: 0, goalName: 'Select Fitness Goal');
+  FitnessLevel selectedLevel =
+      FitnessLevel(id: 0, levelName: 'Select Fitness Level');
 
-  FitnessGoal selectedGoal = FitnessGoal(id: 0, goalName: 'Select Fitness Goal');
-  FitnessLevel selectedLevel = FitnessLevel(id: 0, levelName: 'Select Fitness Level');
+  AnimationController? _buttonController;
+ 
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   List<FitnessGoal> fitnessGoals = [
     FitnessGoal(id: 1, goalName: 'Weight Loss'),
     FitnessGoal(id: 2, goalName: 'Muscle Gain'),
-    FitnessGoal(id: 3, goalName: 'Weight Gain'),
-    FitnessGoal(id: 4, goalName: 'Improved Endurance'),
-    FitnessGoal(id: 5, goalName: 'Increased Flexibility'),
-    FitnessGoal(id: 6, goalName: 'Better Sleep Quality'),
-    FitnessGoal(id: 7, goalName: 'Stress Reduction'),
-    FitnessGoal(id: 8, goalName: 'Enhanced Mental Health'),
-    FitnessGoal(id: 9, goalName: 'Overall Wellness'),
-    FitnessGoal(id: 10, goalName: 'Increased Energy Levels'),
   ];
 
   List<FitnessLevel> fitnessLevels = [
     FitnessLevel(id: 1, levelName: 'Beginner'),
     FitnessLevel(id: 2, levelName: 'Intermediate'),
-    FitnessLevel(id: 3, levelName: 'Advanced'),
-    FitnessLevel(id: 4, levelName: 'Expert'),
-    FitnessLevel(id: 5, levelName: 'Professional'),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _buttonController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _buttonController!, curve: Curves.easeIn),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.5),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _buttonController!, curve: Curves.easeInOut),
+    );
+
+    _buttonController?.forward();
+  }
+
+  @override
+  void dispose() {
+    _buttonController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SafeArea(
       child: Scaffold(
-        
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Section Title
-              const AnimatedSwitcher(
-                duration: Duration(milliseconds: 300),
-                child: Text(
-                  "Last Step",
-                  key: ValueKey<int>(1),
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+        body: SingleChildScrollView(
+          padding: HealthHubPadding.allPagesPadding(context),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SlideTransition(
+                  position: _slideAnimation,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Final Step",
+                          style: interBold(
+                            fontSize: 24,
+                            color: appMainColor,
+                          )
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          "Complete your profile by adding your goals, fitness level, and uploading your before photos.",
+                          style: interMedium(
+                            fontSize: 16,
+                            color: appMainColor,
+                          )
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-      
-              const SizedBox(height: 16),
-      
-              // Fitness Goal Dropdown
-              const Text(
-                "Select Fitness Goal",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 24),
+            
+                // Fitness Goal Dropdown
+                const Text(
+                  "Select Fitness Goal",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<FitnessGoal>(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
-                ),
-                value: selectedGoal.id == 0 ? null : selectedGoal,
-                items: [
-                  for (FitnessGoal goal in fitnessGoals)
-                    DropdownMenuItem(
+                const SizedBox(height: 8),
+                DropdownButtonFormField<FitnessGoal>(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                    
+                  ),
+                  value: selectedGoal.id == 0 ? null : selectedGoal,
+                  items: fitnessGoals.map((FitnessGoal goal) {
+                    return DropdownMenuItem(
                       value: goal,
                       child: Text(goal.goalName),
-                    )
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    selectedGoal = value!;
-                  });
-                },
-              ),
-      
-              const SizedBox(height: 16),
-      
-              // Fitness Level Dropdown
-              const Text(
-                "Select Fitness Level",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedGoal = value!;
+                    });
+                  },
                 ),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<FitnessLevel>(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                const SizedBox(height: 16),
+            
+                // Fitness Level Dropdown
+                const Text(
+                  "Select Fitness Level",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-                value: selectedLevel.id == 0 ? null : selectedLevel,
-                items: [
-                  for (FitnessLevel level in fitnessLevels)
-                    DropdownMenuItem(
+                const SizedBox(height: 8),
+                DropdownButtonFormField<FitnessLevel>(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                   
+                  ),
+                  value: selectedLevel.id == 0 ? null : selectedLevel,
+                  items: fitnessLevels.map((FitnessLevel level) {
+                    return DropdownMenuItem(
                       value: level,
                       child: Text(level.levelName),
-                    )
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    selectedLevel = value!;
-                  });
-                },
-              ),
-      
-              const SizedBox(height: 16),
-      
-              // Motivation Text Field
-              const Text(
-                "Motivation",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedLevel = value!;
+                    });
+                  },
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: "What motivates you to workout?",
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                const SizedBox(height: 16),
+            
+                // Motivation Text Field
+                const Text(
+                  "Motivation",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-              ),
-      
-              const SizedBox(height: 16),
-      
-              // Before Photos
-              Row(
-                children: [
-                  const Text(
-                    "Before Photos",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                const SizedBox(height: 8),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    hintText: "What motivates you to workout?",
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                   
+                  ),
+                  enabled: selectedGoal.id != 0 && selectedLevel.id != 0,
+                ),
+                const SizedBox(height: 24),
+            
+                // Before Photos
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Before Photos",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        List<File>? photos = await pickMultipleImages(context);
+                        if (photos != null) {
+                          setState(() {
+                            beforePhotos = photos;
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.upload_file),
+                      label: const Text("Upload Photos"),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                beforePhotos.isNotEmpty
+                    ? SizedBox(
+                        height: 120,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: beforePhotos.length,
+                          itemBuilder: (context, index) {
+                            return Stack(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 12),
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    image: DecorationImage(
+                                      image: FileImage(beforePhotos[index]),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  right: 4,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        beforePhotos.removeAt(index);
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.delete,
+                                        size: 20,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      )
+                    : const Text(
+                        "No photos uploaded yet.",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                const SizedBox(height: 24),
+            
+                // Finish Button
+                ScaleTransition(
+                  scale: Tween(begin: 1.0, end: 1.1).animate(
+                    CurvedAnimation(
+                      parent: _buttonController!,
+                      curve: Curves.easeInOut,
                     ),
                   ),
-      
-                  const Spacer(),
-      
-                   ElevatedButton(
-                onPressed: () async {
-                  List<File>? photos = await pickMultipleImages(context);
-                  if (photos != null) {
-                    setState(() {
-                      beforePhotos = photos;
-                    });
-                  }
-                },
-                child: const Text("Upload Photos"),
-              ),
-                  
-                ],
-              ),
-              const SizedBox(height: 8),
-              beforePhotos.isNotEmpty
-                  ? Expanded(
-                      child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 8.0,
-                          mainAxisSpacing: 8.0,
-                        ),
-                        itemCount: beforePhotos.length,
-                        itemBuilder: (context, index) {
-                          return Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  beforePhotos[index],
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Positioned(
-                                top: 4,
-                                right: 4,
-                                child: IconButton(
-                                  icon: const Icon(
-
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      beforePhotos.removeAt(index);
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    )
-                  : const Text(
-                      "No photos uploaded.",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                      ),
-                    ),
-      
-              const SizedBox(height: 16),
-      
-             
-            ],
+                  child: HealthhubCustomButton(
+                    height: 40,
+                    textColor: Colors.white,
+                    backgroundColor: appMainColor,
+                    width: double.infinity,
+                    text: "Finish",
+                    onPressed: () {
+                      _buttonController?.forward().then((value) {
+                        context.pushNamed("mainhome");
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

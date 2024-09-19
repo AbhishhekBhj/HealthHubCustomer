@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/View/Auth/login/login_page.dart';
 import 'package:healthhubcustomer/View/widgets/buttons/healthhub_custom_button.dart';
 import 'package:healthhubcustomer/View/widgets/textfields/custom_textfield.dart';
@@ -64,6 +64,8 @@ class _SignUpMainPageState extends State<SignUpMainPage>
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;;
+    var width = MediaQuery.of(context).size.width;;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -134,13 +136,14 @@ class _SignUpMainPageState extends State<SignUpMainPage>
                   ScaleTransition(
                     scale: _fadeAnimation,
                     child: HealthhubCustomButton(
-                      height: Get.height * 0.05,
+                      height: height * 0.05,
                       text: 'Sign Up',
                       onPressed: () {
-                        Get.to(() => const Signup2());
+                        // Get.to(() => const Signup2());
+                        context.pushNamed('signup2');
                       },
                       backgroundColor: appMainColor,
-                      textColor: Colors.white,
+                      textColor: appWhiteColor,
                       borderRadius: 12,
                     ),
                   ),
@@ -164,7 +167,8 @@ class _SignUpMainPageState extends State<SignUpMainPage>
                         ),
                         TextButton(
                           onPressed: () {
-                            Get.offAll(const LoginPage());
+                            // Get.offAll(const LoginPage());
+                            context.pushNamed('login');
                           },
                           child: const Text(
                             'Sign In',
