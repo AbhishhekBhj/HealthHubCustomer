@@ -78,7 +78,7 @@ class _ReferEarnState extends State<ReferEarn> with TickerProviderStateMixin {
   }
 
   Widget buildReferCodeContainer({required double height, required double width}) {
-    final shareMessage = 'Hey! I am inviting you to join HealthHub. Use my referral code: ABC123XYZ to get 10% off on your first order.';
+   
 
     return Container(
       height: height,
@@ -110,7 +110,6 @@ class _ReferEarnState extends State<ReferEarn> with TickerProviderStateMixin {
               'ABC123XYZ', // This would be dynamically set
               style: interMedium().copyWith(color: appWhiteColor, fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: getShareIcons().asMap().entries.map((entry) {
@@ -119,7 +118,7 @@ class _ReferEarnState extends State<ReferEarn> with TickerProviderStateMixin {
                 return IconButton(
                   icon: Icon(icon, color: appWhiteColor),
                   onPressed: () {
-                    getShareFunctions()[index](shareMessage);
+                    getShareFunctions()[index](referAndEarnText);
                   },
                 );
               }).toList(),

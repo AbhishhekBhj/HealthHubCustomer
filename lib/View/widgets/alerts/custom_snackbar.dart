@@ -5,14 +5,18 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> customSnackBar({
   required String message,
   required Color snackBarColor,
   required Color textColor,
+   VoidCallback? onTap, // Tap callback function
 }) {
   return ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(
-        message,
-        style: TextStyle(
-          color: textColor, // Using the textColor parameter
-          fontSize: 16,
+      content: GestureDetector(
+        onTap: onTap, // Triggering the tap action
+        child: Text(
+          message,
+          style: TextStyle(
+            color: textColor, // Using the textColor parameter
+            fontSize: 16,
+          ),
         ),
       ),
       backgroundColor: snackBarColor, // Using the snackBarColor parameter
