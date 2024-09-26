@@ -35,5 +35,16 @@ class SharedPreferenceHelper{
     return prefs.getInt('saveSelectedWalletSkinId') ?? 1;
   }
 
+
+  void saveisLightTheme(bool isLight) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('saveisLightTheme', isLight);
+  }
+
+  Future<bool> getisLightTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('saveisLightTheme') ?? true;
+  }
+
   
 }

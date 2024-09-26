@@ -3,7 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/View/widgets/custom_list_tile.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
+import 'package:healthhubcustomer/utils/themes.dart';
+import 'package:provider/provider.dart';
 
+import '../../../Controller/providers/theme_provider.dart';
 import 'Refer&Earn/refer_earn.dart';
 
 class SideOptionsPage extends StatelessWidget {
@@ -11,6 +14,8 @@ class SideOptionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Side Options'),
@@ -135,6 +140,21 @@ class SideOptionsPage extends StatelessWidget {
                   const Color.fromARGB(255, 201, 175, 175),
                   appWhiteColor
                 ]),
+
+
+                SwitchListTile.adaptive(
+            title: Text('Switch to ${themeProvider.isLightTheme ? 'Dark' : 'Light'} Theme'),
+            value: themeProvider.isLightTheme,
+            onChanged: (value) {
+              // Set the theme based on the switch value
+              themeProvider.setThemeData(
+                value ? lightTheme : darkTheme,
+              );
+
+            }
+
+                )
+      
           ],
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:healthhubcustomer/Services/notification_services.dart';
 import 'package:healthhubcustomer/View/OnBoarding/onboarding_base.dart';
 import 'package:healthhubcustomer/utils/app_constants.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
@@ -22,12 +24,24 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _animation;
 
+  late   NotificationServices _notificationServices;
+
+
+
+  void requestPermisson(){
+    
+  }
+
+
+
 
   SharedPreferenceHelper _sharedPreferenceHelper = SharedPreferenceHelper();
 
   @override
   void initState() {
     super.initState();
+
+    _notificationServices = NotificationServices(context);
 
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
@@ -38,8 +52,11 @@ class _SplashScreenState extends State<SplashScreen>
       parent: _controller,
       curve: Curves.easeInOut,
     );
+    initializeFIrebase();
+
 
      navigateFromSplashScreen();
+
   }
 
   @override
@@ -47,6 +64,15 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.dispose();
 
     super.dispose();
+  }
+
+
+  void initializeFIrebase()async{
+
+    log("Firebase Init");
+
+    await _notificationServices.getDeviceToken();
+
   }
 
   navigateFromSplashScreen() async

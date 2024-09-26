@@ -12,6 +12,7 @@ import '../../View/Home/Side/side_options_page.dart';
 import '../../View/Home/main_home_page.dart';
 import '../../View/Home/trainer/trainer_page.dart';
 import '../../View/OnBoarding/onboarding_base.dart';
+import '../../View/widgets/scratchers/reward_notification_scratcher.dart';
 import '../../splash_screen.dart';
 
 final router = GoRouter(routes: [
@@ -33,7 +34,15 @@ final router = GoRouter(routes: [
 ),
 
 
-  GoRoute(path: "/signup2",name: "signup2", builder: (context, state) => const Signup2(),),
+ GoRoute(
+  path: "/signup2/:imageUrl/:username",  // Define dynamic parameters in the path
+  name: "signup2",
+  builder: (context, state) => Signup2(
+    imageUrl: state.pathParameters['imageUrl']!, // Retrieve from pathParameters
+    username: state.pathParameters['username']!,
+  ),
+),
+
 
   GoRoute(path: "/signup3",name: "signup3", builder: (context, state) => const Signup3(),),
 
@@ -50,4 +59,22 @@ final router = GoRouter(routes: [
 
   GoRoute(path: "/walletPage",name: "walletPage", builder: (context, state) =>  MyWalletPage(),),
   GoRoute(path: "/skinsPage", name: "skinsPage", builder: (context, state) => WalletSkinsPage()),
+
+ GoRoute(
+  path: "/rewardScratcher/:point/:expiryDate",
+  name: "rewardScratcher",
+  builder: (context, state) {
+    final String point = state.pathParameters['point']!;
+    final String expiryDateString = state.pathParameters
+    ['expiryDate']!;
+    
+    // Parse the expiry date string to a DateTime object
+    DateTime expiryDate = DateTime.parse(expiryDateString);
+    
+    return RewardNotificationScratcher(
+      rewardPoints: point,
+      expiryDate: expiryDate,
+    );
+  },
+),
 ]);

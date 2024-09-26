@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
+import 'package:healthhubcustomer/utils/shared_preference_helper.dart';
 import 'package:healthhubcustomer/utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -32,13 +33,16 @@ class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
   late Animation<Offset> _slideAnimation;
 
   List<FitnessGoal> fitnessGoals = [
-    FitnessGoal(id: 1, goalName: 'Weight Loss'),
-    FitnessGoal(id: 2, goalName: 'Muscle Gain'),
+    FitnessGoal(id: 3, goalName: 'Weight Loss'),
+    FitnessGoal(id: 5, goalName: 'Muscle Gain'),
+    FitnessGoal(id: 4, goalName: 'Maintain Weight'),
   ];
 
   List<FitnessLevel> fitnessLevels = [
-    FitnessLevel(id: 1, levelName: 'Beginner'),
+    FitnessLevel(id: 2, levelName: 'Beginner'),
     FitnessLevel(id: 2, levelName: 'Intermediate'),
+    FitnessLevel(id: 3, levelName: 'Advanced'),
+
   ];
 
   @override
@@ -276,6 +280,7 @@ class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
                     text: "Finish",
                     onPressed: () {
                       _buttonController?.forward().then((value) {
+                       SharedPreferenceHelper(). saveUserLoggedIn(true);
                         context.pushNamed("mainhome");
                       });
                     },

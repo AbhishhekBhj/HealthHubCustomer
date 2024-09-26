@@ -13,7 +13,11 @@ import 'package:healthhubcustomer/utils/custom_textStyles.dart';
 import '../../widgets/buttons/healthhub_custom_button.dart';
 
 class Signup2 extends StatefulWidget {
-  const Signup2({super.key});
+   Signup2({super.key, this.username, this.imageUrl} );
+
+  
+dynamic username;
+dynamic imageUrl;
 
   @override
   State<Signup2> createState() => _Signup2State();
@@ -26,14 +30,20 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
   double initialHeight = 170;
   ActivityLevels? selectedActivityLevel;
   Genders? selectedGender;
+  String dateofBirth="";
+  String bio = "";
+  double age = 14.0;
+
 
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
+   final TextEditingController _usernameController = TextEditingController();
+
   List<Genders> genders = [
-    Genders(id: 1, genderName: "Male"),
-    Genders(id: 2, genderName: "Female"),
+    Genders(id: 2, genderName: "Male"),
+    Genders(id: 3, genderName: "Female"),
   ];
 
   List<ActivityLevels> activityLevels = [
@@ -103,11 +113,33 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
+
+                     const SizedBox(height: 16),
+                  CustomTextfield(
+                    isBorder: true,
+                    controller: _usernameController,
+                    hintText: 'Username',
+                    prefixIcon: const Icon(Icons.person),
+                  ),
                     Text(
                       "Select A Profile Picture",
                       style: interRegular(color: appMainColor, fontSize: 16),
                     ),
                     const SizedBox(height: 10),
+
+
+                    widget.imageUrl != null
+                        ? ClipOval(
+                            child: Image.network(
+                              widget.imageUrl,
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        :
+
+
                     GestureDetector(
                       onTap: () async {
                         // Show bottom sheet for image selection
@@ -221,6 +253,23 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                       activeColor: appMainColor,
                       inactiveColor: Colors.grey[300],
                     ),
+
+                     Text(
+                      "Age: ${age.toInt()}",
+                      style: interRegular(color: appMainColor, fontSize: 16),
+                    ),
+                    Slider.adaptive(
+                    activeColor: appMainColor,
+                    value: age,
+                    min: 14, // Minimum age
+                    max: 90, // Maximum age
+                    divisions: 76, // Optional: For more granular control
+                    label: age.toInt().toString(),
+                    onChanged: (value) {
+                      setState(() {
+                        age = value;
+                      });
+                    }),
                     const SizedBox(height: 20),
                     CustomTextfield(
                       maxLines: 5,

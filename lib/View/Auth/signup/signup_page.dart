@@ -1,15 +1,22 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/View/Auth/login/login_page.dart';
 import 'package:healthhubcustomer/View/widgets/buttons/healthhub_custom_button.dart';
-import 'package:healthhubcustomer/View/widgets/textfields/custom_textfield.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
 
+import '../../../Controller/functions/google_auth_func.dart';
 import 'signup_2.dart';
 
 class SignUpMainPage extends StatefulWidget {
-  const SignUpMainPage({super.key});
+   SignUpMainPage({super.key,});
+
+
+  String userName = '';
+  String imageUrl = '';
 
   @override
   State<SignUpMainPage> createState() => _SignUpMainPageState();
@@ -21,24 +28,16 @@ class _SignUpMainPageState extends State<SignUpMainPage>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  double age = 14.0;
+  UserCredential? userCredential;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the Animation Controller
     _controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
 
-    // Define a Fade Animation and Slide Animation
     _fadeAnimation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeIn,
@@ -52,7 +51,6 @@ class _SignUpMainPageState extends State<SignUpMainPage>
       curve: Curves.easeOut,
     ));
 
-    // Start animation
     _controller.forward();
   }
 
@@ -64,8 +62,8 @@ class _SignUpMainPageState extends State<SignUpMainPage>
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;;
-    var width = MediaQuery.of(context).size.width;;
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -75,60 +73,57 @@ class _SignUpMainPageState extends State<SignUpMainPage>
             child: SlideTransition(
               position: _slideAnimation,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Sign Up with Google Button
+                  HealthhubCustomButton(
+                    height: height * 0.05,
+                    text: 'Sign Up with Google',
+                    onPressed: () {
+                      signin().then((value) {
+                        if (value != null) {
+                          userCredential = value;
+                          log("User Signed In Successfully ${value}");
+                          // context.pushNamed('signup2');
+                          context.pushNamed(
+  'signup2',
+  pathParameters: {
+    'imageUrl': '${userCredential?.user?.photoURL}',  // Pass the imageUrl
+    'username': '${userCredential?.user?.displayName}',  // Pass the username
+  },
+);
 
-                  Text("Create an Account", style: interBold(fontSize: 30, color: appMainColor),),
-                  const SizedBox(height: 16),
-                  CustomTextfield(
-                    isBorder: true,
-                    controller: _usernameController,
-                    hintText: 'Username',
-                    prefixIcon: const Icon(Icons.person),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextfield(
-                    isBorder: true,
-                    controller: _emailController,
-                    hintText: 'Email',
-                    prefixIcon: const Icon(Icons.email),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextfield(
-                    isBorder: true,
-                    controller: _passwordController,
-                    hintText: 'Password',
-                    prefixIcon: const Icon(Icons.lock),
-                    isObscure: true,
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextfield(
-                    isBorder: true,
-                    controller: _confirmPasswordController,
-                    hintText: 'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock),
-                    isObscure: true,
-                  ),
-                  const SizedBox(height: 16),
-                  // Slider for age selection
-                  Text(
-                    'Select Your Age: ${age.toInt()} years',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Slider.adaptive(
-                    activeColor: appMainColor,
-                    value: age,
-                    min: 14, // Minimum age
-                    max: 90, // Maximum age
-                    divisions: 76, // Optional: For more granular control
-                    label: age.toInt().toString(),
-                    onChanged: (value) {
-                      setState(() {
-                        age = value;
+                        }
                       });
                     },
+                    backgroundColor: appMainColor,
+                    textColor: appWhiteColor,
+                    borderRadius: 12,
+                     // Google Icon
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Divider
+                  const Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Colors.black26,
+                          thickness: 1.5,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text("OR", style: TextStyle(fontSize: 16)),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Colors.black26,
+                          thickness: 1.5,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
 
@@ -139,8 +134,7 @@ class _SignUpMainPageState extends State<SignUpMainPage>
                       height: height * 0.05,
                       text: 'Sign Up',
                       onPressed: () {
-                        // Get.to(() => const Signup2());
-                        context.pushNamed('signup2');
+                        // Add your normal sign-up logic here
                       },
                       backgroundColor: appMainColor,
                       textColor: appWhiteColor,
@@ -167,15 +161,15 @@ class _SignUpMainPageState extends State<SignUpMainPage>
                         ),
                         TextButton(
                           onPressed: () {
-                            // Get.offAll(const LoginPage());
                             context.pushNamed('login');
                           },
                           child: const Text(
                             'Sign In',
                             style: TextStyle(
-                                color: appMainColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                              color: appMainColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         )
                       ],
@@ -188,5 +182,15 @@ class _SignUpMainPageState extends State<SignUpMainPage>
         ),
       ),
     );
+  }
+
+  Future<UserCredential?> signin() async {
+    var credential = await signInWithGoogle(context: context);
+    log(credential.toString());
+    if (credential != null) {
+      return credential;
+    } else {
+      return null;
+    }
   }
 }

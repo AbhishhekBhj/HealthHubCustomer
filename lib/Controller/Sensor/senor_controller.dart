@@ -3,7 +3,13 @@ import 'dart:math';
 import 'dart:developer' as dev;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_compass/flutter_compass.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:healthhubcustomer/colors/colors.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import '../providers/step_counter_provider.dart';
 
 class StepCounterPage extends StatefulWidget {
   @override
@@ -14,29 +20,26 @@ class _StepCounterPageState extends State<StepCounterPage> {
   double _x = 0.0;
   double _y = 0.0;
   double _z = 0.0;
-  double _gyroX = 0.0;
-  double _gyroY = 0.0;
-  double _gyroZ = 0.0;
   int _stepCount = 0;
-  int initialSteps = 0;
 
   double _lastMagnitude = 0.0;
-  double _threshold = 0.1;
-  double _alpha = 0.95;
+  double _threshold = 0.15; // Calibration threshold
+  double _alpha = 0.9; // Calibration factor
   int _bufferSize = 50;
 
   List<double> _magnitudeBuffer = [];
   StreamSubscription<UserAccelerometerEvent>? _accelerometerSubscription;
-  StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
   final StreamController<int> _stepCountController = StreamController<int>.broadcast();
 
   DateTime? _lastStepTime;
-  final Duration _debounceDuration = Duration(milliseconds: 300);
+  final Duration _debounceDuration = Duration(milliseconds: 500);
+  Position? _currentPosition;
 
   @override
   void initState() {
     super.initState();
     _startListening();
+    _getCurrentLocation();
   }
 
   void _startListening() {
@@ -57,58 +60,51 @@ class _StepCounterPageState extends State<StepCounterPage> {
 
       _checkForStep();
     });
-
-    _gyroscopeSubscription = gyroscopeEvents.listen((event) {
-      _gyroX = event.x;
-      _gyroY = event.y;
-      _gyroZ = event.z;
-
-      // Additional processing of gyroscope data can be done here
-    });
   }
 
   void _checkForStep() {
     DateTime now = DateTime.now();
 
+    // Using both magnitude threshold and GPS-based speed for calibration
     if (_lastMagnitude > _threshold && (_lastStepTime == null || now.difference(_lastStepTime!) > _debounceDuration)) {
-      _stepCount++;
-      _stepCountController.add(_stepCount);
-      _lastStepTime = now;
+      // Check if the user is moving
+      if (_currentPosition != null) {
+        double speed = _currentPosition!.speed; // Use Geolocator's speed (in m/s)
+
+        // Basic speed threshold check (adjust as needed)
+        if (speed > 0.5) { // Example threshold
+          _stepCount++;
+          _stepCountController.add(_stepCount);
+          _lastStepTime = now;
+          dev.log('Step detected: $_stepCount at speed: $speed');
+        }
+      }
     }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    // Update location at regular intervals
+    Timer.periodic(Duration(seconds: 5), (timer) async {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _currentPosition = position;
+      });
+    });
   }
 
   @override
   void dispose() {
     _accelerometerSubscription?.cancel();
-    _gyroscopeSubscription?.cancel();
     _stepCountController.close();
     super.dispose();
   }
 
-  void _updateThreshold(double newValue) {
-    setState(() {
-      _threshold = newValue;
-    });
-  }
-
-  void _updateAlpha(double newValue) {
-    setState(() {
-      _alpha = newValue;
-    });
-  }
-
-  void _updateBufferSize(double newValue) {
-    setState(() {
-      _bufferSize = newValue.toInt();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    int stepGoals = Provider.of<StepCounterProvider>(context).stepGoals;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Step Counter'),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -124,82 +120,35 @@ class _StepCounterPageState extends State<StepCounterPage> {
               stream: _stepCountController.stream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  dev.log('Step count: ${snapshot.data}');
-                  return Text(
-                    'Step Count: ${snapshot.data}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 24),
+                  int currentSteps = snapshot.data!;
+                  dev.log('Step count: $currentSteps');
+
+                  // Calculate percentage of steps towards goal
+                  double percentage = (currentSteps / stepGoals).clamp(0.0, 1.0);
+
+                  return CircularPercentIndicator(
+                    radius: 100.0,
+                    lineWidth: 10.0,
+                    percent: percentage,
+                    center: Text('$currentSteps'),
+                    backgroundColor: Colors.grey,
+                    progressColor: appMainColor,
                   );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else if (snapshot.connectionState == ConnectionState.done) {
-                  return Text('Connection has been closed');
-                } else if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text('Steps: ${initialSteps}');
                 } else {
-                  return CupertinoActivityIndicator();
+                  return CircularPercentIndicator(
+                    radius: 100.0,
+                    lineWidth: 10.0,
+                    percent: 0,
+                    center: Text('0'),
+                    backgroundColor: Colors.grey,
+                    progressColor: appMainColor,
+                  );
                 }
               },
             ),
-            SizedBox(height: 32),
-            _buildCalibrationControls(),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildCalibrationControls() {
-    return Column(
-      children: [
-        Text('Calibration Controls', style: Theme.of(context).textTheme.bodySmall),
-        SizedBox(height: 16),
-        _buildSlider(
-          title: 'Threshold',
-          value: _threshold,
-          min: 0.0,
-          max: 1.0,
-          onChanged: (value) => _updateThreshold(value),
-        ),
-        SizedBox(height: 16),
-        _buildSlider(
-          title: 'Alpha',
-          value: _alpha,
-          min: 0.0,
-          max: 1.0,
-          onChanged: (value) => _updateAlpha(value),
-        ),
-        SizedBox(height: 16),
-        _buildSlider(
-          title: 'Buffer Size',
-          value: _bufferSize.toDouble(),
-          min: 10.0,
-          max: 100.0,
-          onChanged: (value) => _updateBufferSize(value),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSlider({
-    required String title,
-    required double value,
-    required double min,
-    required double max,
-    required ValueChanged<double> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.bodySmall),
-        Slider(
-          value: value,
-          min: min,
-          max: max,
-          divisions: 100,
-          onChanged: onChanged,
-        ),
-        Text(value.toStringAsFixed(2)),
-      ],
     );
   }
 }
