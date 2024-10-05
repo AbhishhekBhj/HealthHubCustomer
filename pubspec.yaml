@@ -64,6 +64,9 @@ dependencies:
   fluttertoast: ^8.2.8
   flutter_compass: ^0.8.0
   geolocator: ^13.0.1
+  flutter_smart_dialog: ^4.9.6+1
+
+  dio:
 
 dev_dependencies:
   hive_generator:  ^1.1.3

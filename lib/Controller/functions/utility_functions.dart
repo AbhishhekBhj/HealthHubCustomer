@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:healthhubcustomer/Controller/functions/google_auth_func.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String returnCurrentPhaseOfDay(){
   DateTime now = DateTime.now();
@@ -39,4 +42,16 @@ Color returnIconColorBasedonPhaseofday(){
     return Colors.blue;
   }
   return Colors.black;
+}
+
+
+void logOut(BuildContext context) async {
+
+  bool signedout = await signOutFromGoogle();
+  signedout?SharedPreferences.getInstance().then((prefs) {
+    prefs.clear();
+    context.goNamed('signup');
+  }):print('Error signing out');
+  
+  
 }

@@ -6,6 +6,7 @@ import 'package:healthhubcustomer/View/OnBoarding/onboarding_base.dart';
 import 'package:healthhubcustomer/utils/app_constants.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
 import 'package:healthhubcustomer/utils/shared_preference_helper.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'View/Auth/login/login_page.dart';
 import "dart:developer";
@@ -27,9 +28,13 @@ class _SplashScreenState extends State<SplashScreen>
   late   NotificationServices _notificationServices;
 
 
-
-  void requestPermisson(){
-    
+ requestPermissions() async {
+    await [
+      Permission.camera,
+      Permission.location,
+      Permission.photos,
+      Permission.notification,
+    ].request();
   }
 
 
@@ -53,6 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeInOut,
     );
     initializeFIrebase();
+    requestPermissions();
 
 
      navigateFromSplashScreen();

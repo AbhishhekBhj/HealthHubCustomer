@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:healthhubcustomer/Controller/providers/auth_provider.dart';
 import 'package:healthhubcustomer/Services/notification_services.dart';
 import 'package:provider/provider.dart';
 import 'Controller/providers/day_phase_provider.dart';
@@ -51,7 +53,10 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => DayPhaseProvider()),
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ChangeNotifierProvider(
+      create: (context) => AuthProvider(),),
+      ChangeNotifierProvider(
       create: (context) => StepCounterProvider(),
+      
       child: MyApp(),
     ),
   
@@ -90,6 +95,9 @@ class _MyAppState extends State<MyApp> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp.router(
+
+      
+
       // theme: 
       theme: themeProvider.themeData,
       darkTheme: darkTheme,

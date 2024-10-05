@@ -105,42 +105,10 @@ class _SignUpMainPageState extends State<SignUpMainPage>
                   const SizedBox(height: 16),
 
                   // Divider
-                  const Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: Colors.black26,
-                          thickness: 1.5,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text("OR", style: TextStyle(fontSize: 16)),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          color: Colors.black26,
-                          thickness: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  
 
                   // Sign Up Button with animation
-                  ScaleTransition(
-                    scale: _fadeAnimation,
-                    child: HealthhubCustomButton(
-                      height: height * 0.05,
-                      text: 'Sign Up',
-                      onPressed: () {
-                        // Add your normal sign-up logic here
-                      },
-                      backgroundColor: appMainColor,
-                      textColor: appWhiteColor,
-                      borderRadius: 12,
-                    ),
-                  ),
+                  
                   const SizedBox(height: 16),
 
                   // Already have an account section with animations

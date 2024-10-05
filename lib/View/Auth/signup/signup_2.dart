@@ -5,11 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/Controller/functions/image_custom_picker.dart';
 import 'package:healthhubcustomer/Model/activity_levels.dart';
 import 'package:healthhubcustomer/Model/genders.dart';
+import 'package:healthhubcustomer/Model/user_model.dart';
 import 'package:healthhubcustomer/View/Auth/signup/signup_3.dart';
 import 'package:healthhubcustomer/View/widgets/textfields/custom_textfield.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
+import 'package:provider/provider.dart';
 
+import '../../../Controller/providers/auth_provider.dart';
 import '../../widgets/buttons/healthhub_custom_button.dart';
 
 class Signup2 extends StatefulWidget {
@@ -87,6 +90,8 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+
+    var authProvider = Provider.of<AuthProvider>(context);
     final height = MediaQuery.of(context).size.height;;
     return Scaffold(
       body: SingleChildScrollView(
@@ -283,9 +288,19 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                     HealthhubCustomButton(
                     height: height * 0.05,
                     text: 'Continue',
-                    onPressed: () {
+                    onPressed: () async {
                       // Get.to(() => const Signup3());
-                      context.pushNamed('signup3');
+                      // context.pushNamed('signup3');
+                 await     authProvider.signUpUserProfile(User(
+                        userName: _usernameController.text,
+                        profilePictureUrl: widget.imageUrl,
+                        bio: _bioController.text,
+                        weight: initialWeight.toInt(),
+                        height: initialHeight.toInt(),
+                        age: age.toInt(),
+                        activityLevelId: selectedActivityLevel!.id,
+
+                      ));
                     },
                     backgroundColor: appMainColor,
                     textColor: appWhiteColor,

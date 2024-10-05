@@ -4,7 +4,9 @@ import 'package:healthhubcustomer/View/Home/Activities/activites_page.dart';
 import 'package:healthhubcustomer/View/Home/HomeOptions/home_options.dart';
 import 'package:healthhubcustomer/View/Home/Side/side_options_page.dart';
 import 'package:healthhubcustomer/View/Home/trainer/trainer_page.dart';
+import 'package:provider/provider.dart';
 
+import '../../Controller/providers/theme_provider.dart';
 import '../../colors/colors.dart';
 
 class MainHomePage extends StatefulWidget {
@@ -74,6 +76,9 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    bool isLightTheme = themeProvider.isLightTheme;
     return Scaffold(
       body: PageView.builder(
         allowImplicitScrolling: false,
@@ -95,7 +100,11 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
         itemCount: icons.length,
         tabBuilder: (int index, bool isActive) {
-          final color = isActive ? Colors.blue : Colors.grey;
+          // final color = isActive ? isLightTheme ? appMainColor : appWhiteColor : isLightTheme ? appWhiteColor : appMainColor;
+          final color = isActive 
+    ? (isLightTheme ? appMainColor : Colors.black) 
+    : (isLightTheme ? Colors.black : appMainColor);
+
           return ScaleTransition(
             scale: isActive ? _iconAnimation : const AlwaysStoppedAnimation(1.0),
             child: Icon(
@@ -112,14 +121,14 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
         leftCornerRadius: 32,
         rightCornerRadius: 32,
         onTap: (index) => onTap(index),
-        splashColor: Colors.blueAccent,
+        splashColor: isLightTheme ? appMainColor : appWhiteColor,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Center action button
         },
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.blue,
+        child:  Icon(Icons.add, color: isLightTheme? appMainColor:Colors.black,),
+        backgroundColor: isLightTheme ? appWhiteColor : appWhiteColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15), // Rounded look for the button
         ),

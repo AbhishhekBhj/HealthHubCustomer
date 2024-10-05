@@ -121,7 +121,7 @@ class NotificationServices {
 
  
 
-Future<void> _handleNotificationTap(BuildContext context, NotificationResponse response) async {
+static Future<void>  _handleNotificationTap(BuildContext context, NotificationResponse response) async {
   // Log the payload of the tapped notification
   dev.log('Notification tapped with payload: ${response.payload.toString()}');
 
