@@ -5,6 +5,7 @@ import 'package:healthhubcustomer/View/Auth/signup/signup_page.dart';
 import 'package:healthhubcustomer/View/Home/HomeOptions/home_options.dart';
 import 'package:healthhubcustomer/View/Home/Side/Wallet/wallet_page.dart';
 
+import '../../View/Chat/chat_page.dart';
 import '../../View/Home/Activities/activites_page.dart';
 import '../../View/Home/Side/Refer&Earn/refer_earn.dart';
 import '../../View/Home/Side/Wallet/wallet_skins_page.dart';
@@ -35,11 +36,14 @@ final router = GoRouter(routes: [
 
 
  GoRoute(
-  path: "/signup2/:imageUrl/:username",  // Define dynamic parameters in the path
+  // path: "/signup2/:imageUrl/:username", 
+  path:"/signup2",
+  
+   // Define dynamic parameters in the path
   name: "signup2",
   builder: (context, state) => Signup2(
-    imageUrl: state.pathParameters['imageUrl']!, // Retrieve from pathParameters
-    username: state.pathParameters['username']!,
+    // imageUrl: state.pathParameters['imageUrl']!, // Retrieve from pathParameters
+    // username: state.pathParameters['username']!,
   ),
 ),
 
@@ -59,6 +63,9 @@ final router = GoRouter(routes: [
 
   GoRoute(path: "/walletPage",name: "walletPage", builder: (context, state) =>  MyWalletPage(),),
   GoRoute(path: "/skinsPage", name: "skinsPage", builder: (context, state) => WalletSkinsPage()),
+
+
+  GoRoute(path: "/chat", name: "chatPage", builder: (context, state) =>  ChatPage()),
 
  GoRoute(
   path: "/rewardScratcher/:point/:expiryDate",

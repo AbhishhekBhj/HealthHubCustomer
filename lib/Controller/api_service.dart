@@ -9,9 +9,9 @@ class ApiService {
 
   ApiService({Dio? dio})
       : _dio = dio ?? Dio(BaseOptions(
-          baseUrl: 'http://192.168.1.69:5000/api/', // Change to your API base URL
-          connectTimeout: Duration(seconds: 60),
-          receiveTimeout: Duration(seconds: 45),
+          baseUrl: 'http://10.0.2.2:7228/api/', // Change to your API base URL
+          connectTimeout: Duration(seconds: 30),
+          receiveTimeout: Duration(seconds: 30),
         ));
 
   Future<Response> get(String url, {String? id, String? query}) async {
@@ -25,6 +25,10 @@ class ApiService {
       );
       return response;
     } catch (e) {
+      log(
+        'Failed to load data: $e',
+        name: 'ApiService',
+      );
       throw Exception('Failed to load data: $e');
     }
   }

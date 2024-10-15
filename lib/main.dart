@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:healthhubcustomer/Controller/providers/auth_provider.dart';
+import 'package:healthhubcustomer/Controller/providers/chat_provider.dart';
+import 'package:healthhubcustomer/Services/active_background_services.dart';
 import 'package:healthhubcustomer/Services/notification_services.dart';
 import 'package:provider/provider.dart';
 import 'Controller/providers/day_phase_provider.dart';
@@ -21,12 +23,13 @@ import 'utils/themes.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
-Future<void> main() async {
 
+Future<void> main() async {
   // debugRepaintRainbowEnabled  = true;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  // await initializeBackGroundService();
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
@@ -34,10 +37,7 @@ Future<void> main() async {
     sound: true,
   );
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-
-
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
 //   await Firebase.initializeApp(
 
@@ -52,17 +52,14 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => WalletSkinProvider()),
       ChangeNotifierProvider(create: (context) => DayPhaseProvider()),
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) => ChatProvider()),
       ChangeNotifierProvider(
-      create: (context) => AuthProvider(),),
+        create: (context) => AuthProvider(),
+      ),
       ChangeNotifierProvider(
-      create: (context) => StepCounterProvider(),
-      
-      child: MyApp(),
-    ),
-  
-
-
-
+        create: (context) => StepCounterProvider(),
+        child: MyApp(),
+      ),
     ],
     child: MyApp(),
   ));
@@ -74,31 +71,26 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-@override
+  @override
   void initState() {
     super.initState();
-    
-  NotificationServices notificationServices = NotificationServices(context);
-  notificationServices.requestNotificationPermission();
-   
-  NotificationServices(context).firebaseInit(context);
 
+    NotificationServices notificationServices = NotificationServices(context);
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.requestNotificationPermission();
+
+    NotificationServices(context).firebaseInit(context);
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
-
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp.router(
-
-      
-
-      // theme: 
+      builder: 
+      FlutterSmartDialog.init(),
+      // theme:
       theme: themeProvider.themeData,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,

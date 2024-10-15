@@ -16,11 +16,16 @@ import '../../../Controller/providers/auth_provider.dart';
 import '../../widgets/buttons/healthhub_custom_button.dart';
 
 class Signup2 extends StatefulWidget {
-   Signup2({super.key, this.username, this.imageUrl} );
+   Signup2({super.key,
+  //   this.username, 
+  //  this.imageUrl
+   
+   
+   } );
 
   
-dynamic username;
-dynamic imageUrl;
+// dynamic username;
+// dynamic imageUrl;
 
   @override
   State<Signup2> createState() => _Signup2State();
@@ -133,16 +138,16 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                     const SizedBox(height: 10),
 
 
-                    widget.imageUrl != null
-                        ? ClipOval(
-                            child: Image.network(
-                              widget.imageUrl,
-                              height: 100,
-                              width: 100,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        :
+                    // widget.imageUrl != null
+                    //     ? ClipOval(
+                    //         child: Image.network(
+                    //           widget.imageUrl,
+                    //           height: 100,
+                    //           width: 100,
+                    //           fit: BoxFit.cover,
+                    //         ),
+                    //       )
+                    //     :
 
 
                     GestureDetector(
@@ -290,17 +295,17 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                     text: 'Continue',
                     onPressed: () async {
                       // Get.to(() => const Signup3());
-                      // context.pushNamed('signup3');
-                 await     authProvider.signUpUserProfile(User(
-                        userName: _usernameController.text,
-                        profilePictureUrl: widget.imageUrl,
-                        bio: _bioController.text,
-                        weight: initialWeight.toInt(),
-                        height: initialHeight.toInt(),
-                        age: age.toInt(),
-                        activityLevelId: selectedActivityLevel!.id,
+                      context.pushNamed('signup3');
+                //  await     authProvider.signUpUserProfile(User(
+                //         userName: _usernameController.text,
+                //         profilePictureUrl: widget.imageUrl,
+                //         bio: _bioController.text,
+                //         weight: initialWeight.toInt(),
+                //         height: initialHeight.toInt(),
+                //         age: age.toInt(),
+                //         activityLevelId: selectedActivityLevel!.id,
 
-                      ));
+                //       ));
                     },
                     backgroundColor: appMainColor,
                     textColor: appWhiteColor,

@@ -81,21 +81,27 @@ class _SignUpMainPageState extends State<SignUpMainPage>
                     height: height * 0.05,
                     text: 'Sign Up with Google',
                     onPressed: () {
-                      signin().then((value) {
-                        if (value != null) {
-                          userCredential = value;
-                          log("User Signed In Successfully ${value}");
-                          // context.pushNamed('signup2');
-                          context.pushNamed(
-  'signup2',
-  pathParameters: {
-    'imageUrl': '${userCredential?.user?.photoURL}',  // Pass the imageUrl
-    'username': '${userCredential?.user?.displayName}',  // Pass the username
-  },
-);
+                          context.pushNamed('signup2');
 
-                        }
-                      });
+//                       signin().then((value) {
+//                         if (value != null) {
+//                           userCredential = value;
+//                           log("User Signed In Successfully ${value}");
+//                           // context.pushNamed('signup2');
+//                           context.pushNamed(
+//   'signup2',
+//   pathParameters: {
+//     'imageUrl': '${userCredential?.user?.photoURL}',  // Pass the imageUrl
+//     'username': '${userCredential?.user?.displayName}',  // Pass the username
+//   },
+
+  
+// );
+
+//                         }
+//                       });
+                    
+                    
                     },
                     backgroundColor: appMainColor,
                     textColor: appWhiteColor,

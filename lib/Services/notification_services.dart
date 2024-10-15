@@ -48,7 +48,8 @@ class NotificationServices {
   void firebaseInit(BuildContext context) {
     dev.log('Firebase Init message');
 
-    FirebaseMessaging.onMessage.listen((message) {
+   try{
+     FirebaseMessaging.onMessage.listen((message) {
       RemoteNotification? notification = message.notification;
       if (kDebugMode) {
         dev.log("Notification title: ${notification?.title}");
@@ -65,43 +66,78 @@ class NotificationServices {
       }
 
       // Show Snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(notification?.title ?? "New Notification"),
-          action: SnackBarAction(
-            label: 'View',
-            onPressed: () {
-              _handleMessageTap(context, message); // Handle notification tap
-            },
-          ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      
 
       dev.log("A new notification arrived");
     });
+   }
+    catch(e){
+      dev.log('Firebase Init error: $e');
+    }
   }
 
   Future<void> _showNotification(RemoteMessage message) async {
-    AndroidNotificationChannel channel = AndroidNotificationChannel(
-      message.notification!.android!.channelId.toString(),
-      message.notification!.android!.channelId.toString(),
-      importance: Importance.max,
-      showBadge: true,
-      playSound: true,
-      enableVibration: true,
-    );
 
-    AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      channel.id,
-      channel.name,
-      channelDescription: 'your_channel_desc',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-    );
+
+  try{
+   dev.log("showing notification");
+
+// Define your notification channel
+AndroidNotificationChannel channel = AndroidNotificationChannel(
+  message.notification!.android!.channelId.toString(),
+  message.notification!.android!.channelId.toString(),
+  importance: Importance.max,
+  showBadge: true,
+  playSound: true,
+  enableVibration: true,
+);
+
+// Define large icon and image for BigPictureStyle
+const String largeIconPath = '@mipmap/ic_launcher'; // Add your own icon
+const String bigPicturePath = '@mipmap/ic_launcher'; // Add your own big picture
+
+// Define AndroidNotificationDetails with customized styles
+AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+  channel.id,
+  channel.name,
+  channelDescription: 'your_channel_desc',
+  importance: Importance.max,
+  priority: Priority.high,
+  playSound: true,
+  enableVibration: true,
+  icon: "@mipmap/ic_launcher",
+
+  // Large icon to make the notification more visual
+  largeIcon: DrawableResourceAndroidBitmap(largeIconPath),
+  
+  // // Enable BigPictureStyle
+  // styleInformation: BigPictureStyleInformation(
+  //   DrawableResourceAndroidBitmap(bigPicturePath),
+  //   largeIcon: DrawableResourceAndroidBitmap(largeIconPath),
+  //   contentTitle: message.notification!.title, // Add the title here
+  //   summaryText: message.notification!.body, // Add the summary text here
+  // ),
+  
+  // Custom notification color
+  color: const Color(0xFF880E4F), // Customize this color
+);
+
+
+  styleInformation: BigTextStyleInformation(
+    message.notification!.body!,
+    contentTitle: message.notification!.title!,
+    htmlFormatContent: true,
+  );
+
+// Now, show the notification with these details
+NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
+await _flutterLocalNotificationsPlugin.show(
+  message.notification.hashCode,
+  message.notification!.title,
+  message.notification!.body,
+  notificationDetails,
+);
+
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -112,21 +148,27 @@ class NotificationServices {
     NotificationDetails platformDetails = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _flutterLocalNotificationsPlugin.show(
-      Random().nextInt(100),
+      1,
       message.notification!.title,
       message.notification!.body,
       platformDetails,
     );
   }
+  catch(e){
+    dev.log("error showing notification: $e");
+    
+  }
+  }
 
  
 
-static Future<void>  _handleNotificationTap(BuildContext context, NotificationResponse response) async {
+static Future<void>  _handleNotificationTap(BuildContext context, NotificationResponse response,) async {
   // Log the payload of the tapped notification
-  dev.log('Notification tapped with payload: ${response.payload.toString()}');
+  try{
+    dev.log('Notification tapped with payload: ${response.toString()}');
 
   // Extract the payload data from the notification response
-  if (response.payload != null) {
+  if (response.payload != null || response.payload!.isNotEmpty) {
     // Assuming the payload is in JSON format
     final Map<String, dynamic> data = jsonDecode(response.payload!);
     dev.log('Payload data: $data');
@@ -145,6 +187,10 @@ static Future<void>  _handleNotificationTap(BuildContext context, NotificationRe
     );
   } else {
     dev.log('No payload found in the notification');
+  }
+  }
+  catch(e){
+    dev.log('Error handling notification tap: $e');
   }
 }
 
@@ -182,6 +228,10 @@ static Future<void>  _handleNotificationTap(BuildContext context, NotificationRe
   Future<String> getDeviceToken() async {
     dev.log('Fetching device token');
     await FirebaseMessaging.instance.subscribeToTopic('all');
+//     /     await FirebaseMessaging.instance.subscribeToTopic('all');
+     await FirebaseMessaging.instance.subscribeToTopic('users');
+    await FirebaseMessaging.instance.subscribeToTopic('awards');
+     await FirebaseMessaging.instance.subscribeToTopic('themes');
 
     String? token = Platform.isIOS
         ? await messaging.getAPNSToken()

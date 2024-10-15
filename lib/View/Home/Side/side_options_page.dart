@@ -122,19 +122,12 @@ class SideOptionsPage extends StatelessWidget {
               gradientColors: gradientColors ),
 
 
-                buildListTile(
-                title: "Refer & Earn",
-                icon: FontAwesomeIcons.wallet,
-                onTap: () {
-                  // Get.to(() => ReferEarn());
-                  context.pushNamed('refer');
-                },
-                backgroundColor: appWhiteColor,
-                iconColor: appWhiteColor,
-                textColor: appWhiteColor,
-                elevation: 8.0,
-                borderRadius: 20.0,
-              gradientColors: gradientColors ),
+               
+
+
+
+
+              
 
                buildListTile(
                 title: "Logout",

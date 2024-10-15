@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/Services/notification_services.dart';
 import 'package:healthhubcustomer/View/OnBoarding/onboarding_base.dart';
@@ -60,9 +61,15 @@ class _SplashScreenState extends State<SplashScreen>
     initializeFIrebase();
     requestPermissions();
 
+    // startBackgroundService();
+
 
      navigateFromSplashScreen();
 
+  }
+
+  Future<void> startBackgroundService() async{
+    FlutterBackgroundService().invoke("setAsForeground");
   }
 
   @override

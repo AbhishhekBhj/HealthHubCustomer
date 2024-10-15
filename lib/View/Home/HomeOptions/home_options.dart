@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/Controller/providers/theme_provider.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
@@ -34,9 +35,16 @@ class _HomeOptionsState extends State<HomeOptions> {
     final dayPhaseProvider = Provider.of<DayPhaseProvider>(context);
 
     return SafeArea(
+      
       child: Padding(
         padding: HealthHubPadding.allPagesPadding(context),
         child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              context.pushNamed('chatPage');
+            },
+            child: const Icon(Icons.chat),
+          ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -50,15 +58,15 @@ class _HomeOptionsState extends State<HomeOptions> {
                       children: [
                         Row(
                           children: [
-                            Text('Good ${dayPhaseProvider.phase}', style: TextStyle(fontSize: 20)),
+                            Text('Good ${dayPhaseProvider.phase}', style: const TextStyle(fontSize: 20)),
                             Icon(dayPhaseProvider.icon, size: 30, color: dayPhaseProvider.color),
                           ],
                         ),
-                        Text('Welcome back Abhishek', style: TextStyle(fontSize: 20)),
+                        const Text('Welcome back Abhishek', style: TextStyle(fontSize: 20)),
                       ],
                     ),
-                    Spacer(),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.wallet)),
+                    const Spacer(),
+                    IconButton(onPressed: () {}, icon: const Icon(Icons.wallet)),
                   ],
                 ),
               ),
@@ -128,7 +136,7 @@ class BuildRowsOfThisWeekDays extends StatelessWidget {
                   selectedDayNotifier.value = i;
                 },
                 child: Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: i == selectedDay ? appMainColor : Colors.grey,
                     borderRadius: BorderRadius.circular(8),

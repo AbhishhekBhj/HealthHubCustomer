@@ -6,42 +6,52 @@ import 'package:geolocator/geolocator.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import '../../utils/shared_preference_helper.dart';
 import '../providers/step_counter_provider.dart';
 
-class StepCounterPage extends StatefulWidget {
-  @override
-  _StepCounterPageState createState() => _StepCounterPageState();
-}
 
-class _StepCounterPageState extends State<StepCounterPage> {
+import 'dart:async';
+import 'dart:math';
+import 'dart:developer' as dev;
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+
+class StepDetectionService {
   double _x = 0.0;
   double _y = 0.0;
   double _z = 0.0;
-  int _stepCount = 0;
-
   double _lastMagnitude = 0.0;
-  double _threshold = 0.15;
-  double _alpha = 0.9;
-  int _bufferSize = 50;
-  List<double> _magnitudeBuffer = [];
-  
-  StreamSubscription<UserAccelerometerEvent>? _accelerometerSubscription;
-  final StreamController<int> _stepCountController = StreamController<int>.broadcast();
-  late StreamSubscription<Position> _positionStream;
-
+  final double _threshold = 0.15;
+  final double _alpha = 0.9;
+  final int _bufferSize = 50;
+  final List<double> _magnitudeBuffer = [];
   DateTime? _lastStepTime;
-  final Duration _debounceDuration = Duration(milliseconds: 500);
+  final Duration _debounceDuration = const Duration(milliseconds: 500);
   Position? _currentPosition;
 
-  @override
-  void initState() {
-    super.initState();
-    _startListening();
+  StreamSubscription<UserAccelerometerEvent>? _accelerometerSubscription;
+  StreamSubscription<Position>? _positionStream;
+
+  Function()? onStepDetected;
+
+  StepDetectionService({this.onStepDetected});
+
+  // Start listening to accelerometer and position updates
+  void startListening() {
+    _startAccelerometerListening();
     _getCurrentLocation();
   }
 
-  void _startListening() {
-    _accelerometerSubscription = userAccelerometerEventStream().listen((event) {
+  // Stop listening to accelerometer and position updates
+  void stopListening() {
+    _accelerometerSubscription?.cancel();
+    _positionStream?.cancel();
+  }
+
+  // Start listening to accelerometer events
+  void _startAccelerometerListening() {
+    _accelerometerSubscription = userAccelerometerEvents.listen((event) {
       _x = event.x;
       _y = event.y;
       _z = event.z;
@@ -60,6 +70,7 @@ class _StepCounterPageState extends State<StepCounterPage> {
     });
   }
 
+  // Check if a step is detected based on magnitude and speed
   void _checkForStep() {
     DateTime now = DateTime.now();
 
@@ -67,72 +78,82 @@ class _StepCounterPageState extends State<StepCounterPage> {
       if (_currentPosition != null) {
         double speed = _currentPosition!.speed;
 
+        // Only count steps if the speed is above a threshold (e.g., walking)
         if (speed > 0.5) {
-          _stepCount++;
-          _stepCountController.add(_stepCount);
           _lastStepTime = now;
-          dev.log('Step detected: $_stepCount at speed: $speed');
+
+          // Notify listeners that a step is detected
+          onStepDetected?.call();
+          dev.log('Step detected at speed: $speed');
         }
       }
     }
   }
 
+  // Get current location and start listening for location changes
   Future<void> _getCurrentLocation() async {
-    _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
+    _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
     _positionStream = Geolocator.getPositionStream(
-      locationSettings: LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 1),
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 1),
     ).listen((Position position) {
       _currentPosition = position;
-      dev.log('Updated position: ${position.latitude}, ${position.longitude}');
+      // dev.log('Updated position: ${position.latitude}, ${position.longitude}');
+    });
+  }
+}
+
+
+
+class StepCounterPage extends StatefulWidget {
+  @override
+  _StepCounterPageState createState() => _StepCounterPageState();
+}
+
+class _StepCounterPageState extends State<StepCounterPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Start step detection after the frame is rendered
+      Provider.of<StepCounterProvider>(context, listen: false).startStepDetection();
     });
   }
 
   @override
   void dispose() {
-    _accelerometerSubscription?.cancel();
-    _stepCountController.close();
-    _positionStream.cancel();
+    Provider.of<StepCounterProvider>(context, listen: false).stopStepDetection();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    int stepGoals = Provider.of<StepCounterProvider>(context).stepGoals;
+    final stepCounterProvider = Provider.of<StepCounterProvider>(context);
+    int currentSteps = stepCounterProvider.steps;
+    int stepGoals = stepCounterProvider.stepGoals;
 
     return Scaffold(
-      
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            
-            StreamBuilder<int>(
-              stream: _stepCountController.stream,
-              builder: (context, snapshot) {
-                int currentSteps = snapshot.data ?? 0;
-                double percentage = (currentSteps / stepGoals).clamp(0.0, 1.0);
-      
-                return CircularPercentIndicator(
-                  radius: 80.0,
-                  lineWidth: 12.0,
-                  animation: true,
-                  animationDuration: 1200,
-                  percent: percentage,
-                  center: Text(
-                    '$currentSteps',
-                    style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                  ),
-                  backgroundColor: Colors.grey.shade200,
-                  progressColor: Colors.blueAccent,
-                  circularStrokeCap: CircularStrokeCap.round,
-                );
-              },
+            CircularPercentIndicator(
+              radius: 80.0,
+              lineWidth: 12.0,
+              animation: true,
+              animationDuration: 1200,
+              percent: (currentSteps / stepGoals).clamp(0.0, 1.0),
+              center: Text(
+                '$currentSteps',
+                style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.grey.shade200,
+              progressColor: Colors.blueAccent,
+              circularStrokeCap: CircularStrokeCap.round,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Goal: $stepGoals steps',
-              style: TextStyle(fontSize: 16.0, color: Colors.black54),
+              style: const TextStyle(fontSize: 16.0, color: Colors.black54),
             ),
           ],
         ),
