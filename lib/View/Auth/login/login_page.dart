@@ -6,8 +6,10 @@ import 'package:healthhubcustomer/View/widgets/buttons/healthhub_custom_button.d
 import 'package:healthhubcustomer/View/widgets/textfields/custom_textfield.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Controller/functions/google_auth_func.dart';
+import '../../../Controller/providers/auth_provider.dart' as auth;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -60,6 +62,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+
+      final auth.AuthProvider authProvider = Provider.of<auth.AuthProvider>(context);
 
     final height = MediaQuery.of(context).size.height;;
     return Scaffold(
@@ -121,7 +125,23 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 textColor: appWhiteColor,
                 
                 height: height * 0.05,
-                onPressed: () {},
+                onPressed: () async {
+
+        var user =          await authProvider.loginUser(email: _emailController.text);
+
+        if(user!=null){
+          context.go('/mainhome'); // Navigate after the sign-up completes
+
+        }
+
+
+
+                  
+                  
+
+                  
+
+                },
                 backgroundColor: appMainColor,
                 borderRadius: 10,
                 text: "Sign in",

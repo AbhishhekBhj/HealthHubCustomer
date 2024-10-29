@@ -5,6 +5,7 @@ import 'package:healthhubcustomer/View/Auth/signup/signup_page.dart';
 import 'package:healthhubcustomer/View/Home/HomeOptions/home_options.dart';
 import 'package:healthhubcustomer/View/Home/Side/Wallet/wallet_page.dart';
 
+import '../../View/Auth/login/login_page.dart';
 import '../../View/Chat/chat_page.dart';
 import '../../View/Home/Activities/activites_page.dart';
 import '../../View/Home/Side/Refer&Earn/refer_earn.dart';
@@ -17,6 +18,9 @@ import '../../View/widgets/scratchers/reward_notification_scratcher.dart';
 import '../../splash_screen.dart';
 
 final router = GoRouter(routes: [
+
+
+  GoRoute(path:"/login", name: "login", builder: (context, state) => const LoginPage()),
 
 
   GoRoute(path: "/", name: "splash", builder: (context, state) => const SplashScreen()),
@@ -37,13 +41,14 @@ final router = GoRouter(routes: [
 
  GoRoute(
   // path: "/signup2/:imageUrl/:username", 
-  path:"/signup2",
+  path:"/signup2/:email",
   
    // Define dynamic parameters in the path
   name: "signup2",
   builder: (context, state) => Signup2(
     // imageUrl: state.pathParameters['imageUrl']!, // Retrieve from pathParameters
     // username: state.pathParameters['username']!,
+    email: state.pathParameters['email']!,
   ),
 ),
 
@@ -58,7 +63,7 @@ final router = GoRouter(routes: [
 
   GoRoute(path: "/refer",name: "refer", builder: (context, state) => const ReferEarn(),),
 
-  GoRoute(path: "/activities",name: "activities", builder: (context, state) => const ActivitesPage(),),
+  GoRoute(path: "/activities",name: "activities", builder: (context, state) =>  FoodLogPage(),),
 
 
   GoRoute(path: "/walletPage",name: "walletPage", builder: (context, state) =>  MyWalletPage(),),

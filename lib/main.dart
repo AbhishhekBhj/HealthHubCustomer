@@ -2,12 +2,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+// import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:healthhubcustomer/Controller/providers/auth_provider.dart';
 import 'package:healthhubcustomer/Controller/providers/chat_provider.dart';
 import 'package:healthhubcustomer/Services/active_background_services.dart';
 import 'package:healthhubcustomer/Services/notification_services.dart';
+import 'package:healthhubcustomer/firebase_options.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'Controller/providers/day_phase_provider.dart';
+import 'Controller/providers/food_provider.dart';
 import 'Controller/providers/step_counter_provider.dart';
 import 'Controller/providers/theme_provider.dart';
 import 'Controller/providers/wallet_skin_provider.dart';
@@ -24,10 +29,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
+
+
+
 Future<void> main() async {
   // debugRepaintRainbowEnabled  = true;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // InitConfig initConfig = InitConfig(
+  //     domain: "zoom.us",
+  //     enableLog: true,
+  //   );
 
   // await initializeBackGroundService();
 
@@ -37,13 +50,13 @@ Future<void> main() async {
     sound: true,
   );
 
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-//   await Firebase.initializeApp(
+  await Firebase.initializeApp(
 
-//     options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
 
-// );
+);
 
   // runApp(MyApp());
 
@@ -53,6 +66,8 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => DayPhaseProvider()),
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ChangeNotifierProvider(create: (context) => ChatProvider()),
+      ChangeNotifierProvider(create: (context) => FoodProvider()),
+
       ChangeNotifierProvider(
         create: (context) => AuthProvider(),
       ),

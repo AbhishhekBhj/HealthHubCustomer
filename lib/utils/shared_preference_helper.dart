@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_constants.dart';
@@ -8,12 +10,7 @@ class SharedPreferenceHelper {
     prefs.setBool('saveUserHasSeenOnboarding', hasSeen);
   }
 
-
-
-
-
-
-void saveTodaysSteps(int steps) async {
+  void saveTodaysSteps(int steps) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt('saveTodaysSteps', steps);
   }
@@ -22,6 +19,7 @@ void saveTodaysSteps(int steps) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt('saveTodaysSteps') ?? 0;
   }
+
   Future<bool> getUserHasSeenOnboarding() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(saveUserSeenOnboarding) ?? false;
@@ -55,5 +53,17 @@ void saveTodaysSteps(int steps) async {
   Future<bool> getisLightTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('saveisLightTheme') ?? true;
+  }
+
+  void saveRefreshToken(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('saveRefreshToken', token);
+  }
+
+  Future<String> getRefreshToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    log('Refresh token: ${prefs.getString('saveRefreshToken')}');
+
+    return prefs.getString('saveRefreshToken') ?? '';
   }
 }

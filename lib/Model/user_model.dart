@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 class ApiResponse {
   String id;
@@ -14,12 +15,18 @@ class ApiResponse {
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
-    return ApiResponse(
-      id: json['\$id'],
-      statusCode: json['statusCode'],
-      message: json['message'],
-      data: Data.fromJson(json['data']),
-    );
+    try {
+      return ApiResponse(
+        id: json['\$id'],
+        statusCode: json['statusCode'],
+        message: json['message'],
+        data: Data.fromJson(json['data']),
+      );
+    } catch (e, s) {
+      print(e);
+      log(s.toString() + "Error in ApiResponse Model");
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -81,7 +88,6 @@ class User {
   String? bio;
   bool? isGoogleSignin;
   String? salt;
-  List<dynamic>? roles; // Can be replaced with a specific type if defined
   DateTime? lastLogin;
   int? numberOfLogins;
   double? tdee;
@@ -114,7 +120,6 @@ class User {
     this.bio,
     this.isGoogleSignin,
     this.salt,
-    this.roles,
     this.lastLogin,
     this.numberOfLogins,
     this.tdee,
@@ -127,16 +132,20 @@ class User {
     this.beforePictures,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  factory User.fromJson(dynamic json) {
     return User(
       id: json['id'],
       userName: json['userName'],
       email: json['email'],
       passwordHash: json['passwordHash'],
-      dateOfBirth: json['dateOfBirth'] != null ? DateTime.parse(json['dateOfBirth']) : null,
+      dateOfBirth: json['dateOfBirth'] != null
+          ? DateTime.parse(json['dateOfBirth'])
+          : null,
       age: json['age'],
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       fitnessLevelId: json['fitnessLevelId'],
       fitnessLevel: json['fitnessLevel'], // Parse to specific type if needed
       fitnessGoalId: json['fitnessGoalId'],
@@ -149,8 +158,9 @@ class User {
       bio: json['bio'],
       isGoogleSignin: json['isGoogleSignin'],
       salt: json['salt'],
-      roles: json['roles'] != null ? List<dynamic>.from(json['roles']['\$values'] ?? []) : null, // Parse to specific type if needed
-      lastLogin: json['lastLogin'] != null ? DateTime.parse(json['lastLogin']) : null,
+      // Parse to specific type if needed
+      lastLogin:
+          json['lastLogin'] != null ? DateTime.parse(json['lastLogin']) : null,
       numberOfLogins: json['numberOfLogins'],
       tdee: json['tdee']?.toDouble(),
       activityLevelId: json['activityLevelId'],
@@ -159,43 +169,65 @@ class User {
       bmr: json['bmr']?.toDouble(),
       refreshTokenId: json['refreshTokenId'],
       fcmToken: json['fcmToken'], // Parse to specific type if needed
-      beforePictures: json['beforePictures'], // Parse to specific type if needed
+      beforePictures:
+          json['beforePictures'], // Parse to specific type if needed
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userName': userName,
-      'email': email,
-      'passwordHash': passwordHash,
-      'dateOfBirth': dateOfBirth?.toIso8601String(),
-      'age': age,
-      'createdAt': createdAt?.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
-      'fitnessLevelId': fitnessLevelId,
-      'fitnessLevel': fitnessLevel, // Convert to JSON format if needed
-      'fitnessGoalId': fitnessGoalId,
-      'fitnessGoal': fitnessGoal, // Convert to JSON format if needed
-      'height': height,
-      'weight': weight,
-      'genderId': genderId,
-      'gender': gender, // Convert to JSON format if needed
-      'profilePictureUrl': profilePictureUrl,
-      'bio': bio,
-      'isGoogleSignin': isGoogleSignin,
-      'salt': salt,
-      'roles': roles != null ? { '\$values': roles } : null,
-      'lastLogin': lastLogin?.toIso8601String(),
-      'numberOfLogins': numberOfLogins,
-      'tdee': tdee,
-      'activityLevelId': activityLevelId,
-      'activityLevel': activityLevel, // Convert to JSON format if needed
-      'bmi': bmi,
-      'bmr': bmr,
-      'refreshTokenId': refreshTokenId,
-      'fcmToken': fcmToken, // Convert to JSON format if needed
-      'beforePictures': beforePictures, // Convert to JSON format if needed
-    };
+    try {
+      return {
+        'id': id,
+        'user_name': userName, // matches JsonPropertyName("user_name")
+        'email': email,
+        'password': passwordHash, // matches JsonPropertyName("password_hash")
+        'date_of_birth': dateOfBirth
+            ?.toIso8601String(), // matches JsonPropertyName("date_of_birth")
+        'age': age,
+        'created_at': createdAt
+            ?.toIso8601String(), // matches JsonPropertyName("created_at")
+        'updated_at': updatedAt
+            ?.toIso8601String(), // matches JsonPropertyName("updated_at")
+        'fitness_level_id':
+            fitnessLevelId, // matches JsonPropertyName("fitness_level_id")
+        'fitness_level': fitnessLevel,
+        'fitness_goal_id':
+            fitnessGoalId, // matches JsonPropertyName("fitness_goal_id")
+        'fitness_goal': fitnessGoal,
+        'height': height,
+        'weight': weight,
+        'gender_id': genderId, // matches JsonPropertyName("gender_id")
+        'gender': gender,
+        'profile_picture_url':
+            profilePictureUrl, // matches JsonPropertyName("profile_picture_url")
+        'bio': bio,
+        'is_google_signin':
+            isGoogleSignin, // matches JsonPropertyName("is_google_signin")
+        'salt': salt,
+        'last_login': lastLogin
+            ?.toIso8601String(), // matches JsonPropertyName("last_login")
+        'number_of_logins':
+            numberOfLogins, // matches JsonPropertyName("number_of_logins")
+        'tdee': tdee,
+        'activity_level_id':
+            activityLevelId, // matches JsonPropertyName("activity_level_id")
+        'activity_level': activityLevel,
+        'bmi': bmi,
+        'bmr': bmr,
+        'refresh_token_id':
+            refreshTokenId, // matches JsonPropertyName("refresh_token_id")
+        'fcm_token': fcmToken, // matches JsonPropertyName("fcm_token")
+        'before_pictures':
+            beforePictures, // matches JsonPropertyName("before_pictures")
+      };
+    } catch (e, s) {
+      print(e);
+
+      log(s.toString() + "Error in User Model");
+
+      rethrow;
+    }
   }
 }
+
+

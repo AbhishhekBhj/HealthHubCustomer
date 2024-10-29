@@ -26,7 +26,7 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
 
   final List<Widget> _pages = [
     const HomeOptions(),
-    const ActivitesPage(),
+     FoodLogPage(),
     const TrainerPage(),
     const SideOptionsPage(),
   ];

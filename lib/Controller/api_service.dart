@@ -3,26 +3,36 @@ import 'dart:io';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:healthhubcustomer/utils/shared_preference_helper.dart';
 
 class ApiService {
   final Dio _dio;
 
+
+
   ApiService({Dio? dio})
       : _dio = dio ?? Dio(BaseOptions(
+        // headers: {
+        //   "Authorization": "Bearer ${  SharedPreferenceHelper().getRefreshToken()}", 
+        // },
           baseUrl: 'http://10.0.2.2:7228/api/', // Change to your API base URL
-          connectTimeout: Duration(seconds: 30),
-          receiveTimeout: Duration(seconds: 30),
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
         ));
 
   Future<Response> get(String url, {String? id, String? query}) async {
     try {
       final response = await _dio.get(
+        
         url,
         queryParameters: {
           'id': id,
           'query': query,
         }..removeWhere((key, value) => value == null),
       );
+
+      log(response.toString());
       return response;
     } catch (e) {
       log(
@@ -82,18 +92,93 @@ class ApiService {
     }
   }
 
-  Future<Response> postSingleImage(String url, String path, String key) async {
-    try {
-      FormData formData = FormData.fromMap({
-        key: await MultipartFile.fromFile(path, filename: path.split('/').last), // Use actual file name
-      });
+  Future<Response> postWithImage(String url, String path, String key, Map<String, dynamic> profileData) async {
+  try {
 
-      final response = await _dio.post(url, data: formData);
-      return response;
-    } catch (e) {
-      throw Exception('Failed to post image: $e');
-    }
+    
+    // Prepare form data, including the image and other profile data
+    FormData formData = FormData.fromMap({
+      key: await MultipartFile.fromFile(path, filename: path.split('/').last), // Add the image file
+      ...profileData // Spread the additional form data into the map
+    });
+
+    log("Form Data: ${formData.fields}");
+
+    // Send the POST request with the multipart data
+    final response = await _dio.post(url, data: formData);
+
+    log('Response: ${response.data}');
+    return response;
+  } catch (e) {
+    throw Exception('Failed to register profile with image: $e');
   }
+}
+
+
+Future<Response?> uploadFilesWithSameKeyDio({
+  required String url,
+  required Map<String, dynamic> fields,
+  required List<File> files,
+  required String fileFieldKey,
+}) async {
+  Dio dio = Dio();
+
+  try {
+
+
+    FormData formData = FormData.fromMap({
+      for (var entry in fields.entries) entry.key: entry.value,
+      fileFieldKey: [
+        for (var file in files)
+          await MultipartFile.fromFile(file.path, filename: file.path.split('/').last),
+      ],
+
+      
+
+
+    });
+
+    dio.interceptors.add(InterceptorsWrapper(
+  onError: (DioError e, handler) {
+    print(e.message);
+    return handler.next(e);
+  },
+));
+
+
+var response = await dio.post(
+  url,
+  data: formData,
+  options: Options(
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  ),
+);
+
+var decoded = json.decode(response.data);
+
+var statusCode = decoded['statusCode'];
+var message = decoded['message'];
+
+if (statusCode == 200|| statusCode == 201) {
+  return response;
+}
+else{
+  throw Exception('Failed to upload files: $message');
+}
+
+
+
+    // Prepare form data
+    
+}
+
+catch (e) {
+    throw Exception('Failed to upload files: $e');
+  }
+}
+
 
 
 

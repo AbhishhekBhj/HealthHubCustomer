@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:healthhubcustomer/Controller/providers/auth_provider.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
 import 'package:healthhubcustomer/utils/shared_preference_helper.dart';
 import 'package:healthhubcustomer/utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Controller/functions/image_custom_picker.dart';
 import '../../../Model/fitness_goals.dart';
@@ -33,13 +36,13 @@ class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
   late Animation<Offset> _slideAnimation;
 
   List<FitnessGoal> fitnessGoals = [
-    FitnessGoal(id: 3, goalName: 'Weight Loss'),
-    FitnessGoal(id: 5, goalName: 'Muscle Gain'),
+    FitnessGoal(id: 2, goalName: 'Weight Loss'),
+    FitnessGoal(id: 3, goalName: 'Muscle Gain'),
     FitnessGoal(id: 4, goalName: 'Maintain Weight'),
   ];
 
   List<FitnessLevel> fitnessLevels = [
-    FitnessLevel(id: 2, levelName: 'Beginner'),
+    FitnessLevel(id: 1, levelName: 'Beginner'),
     FitnessLevel(id: 2, levelName: 'Intermediate'),
     FitnessLevel(id: 3, levelName: 'Advanced'),
 
@@ -75,6 +78,7 @@ class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
     final theme = Theme.of(context);
     return SafeArea(
       child: Scaffold(
@@ -102,7 +106,7 @@ class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          "Complete your profile by adding your goals, fitness level, and uploading your before photos.",
+                          "Complete your profile by adding your goals, fitness level, ",
                           style: interMedium(
                             fontSize: 16,
                             color: appMainColor,
@@ -186,82 +190,82 @@ class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
                 const SizedBox(height: 24),
             
                 // Before Photos
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Before Photos",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        List<File>? photos = await pickMultipleImages(context);
-                        if (photos != null) {
-                          setState(() {
-                            beforePhotos = photos;
-                          });
-                        }
-                      },
-                      icon: const Icon(Icons.upload_file),
-                      label: const Text("Upload Photos"),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                beforePhotos.isNotEmpty
-                    ? SizedBox(
-                        height: 120,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: beforePhotos.length,
-                          itemBuilder: (context, index) {
-                            return Stack(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(right: 12),
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    image: DecorationImage(
-                                      image: FileImage(beforePhotos[index]),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 4,
-                                  right: 4,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        beforePhotos.removeAt(index);
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black54,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.delete,
-                                        size: 20,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      )
-                    : const Text(
-                        "No photos uploaded yet.",
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
-                      ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     const Text(
+                //       "Before Photos",
+                //       style: TextStyle(
+                //         fontSize: 18,
+                //         fontWeight: FontWeight.w600,
+                //       ),
+                //     ),
+                //     ElevatedButton.icon(
+                //       onPressed: () async {
+                //         List<File>? photos = await pickMultipleImages(context);
+                //         if (photos != null) {
+                //           setState(() {
+                //             beforePhotos = photos;
+                //           });
+                //         }
+                //       },
+                //       icon: const Icon(Icons.upload_file),
+                //       label: const Text("Upload Photos"),
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(height: 12),
+                // beforePhotos.isNotEmpty
+                //     ? SizedBox(
+                //         height: 120,
+                //         child: ListView.builder(
+                //           scrollDirection: Axis.horizontal,
+                //           itemCount: beforePhotos.length,
+                //           itemBuilder: (context, index) {
+                //             return Stack(
+                //               children: [
+                //                 Container(
+                //                   margin: const EdgeInsets.only(right: 12),
+                //                   width: 100,
+                //                   decoration: BoxDecoration(
+                //                     borderRadius: BorderRadius.circular(8),
+                //                     image: DecorationImage(
+                //                       image: FileImage(beforePhotos[index]),
+                //                       fit: BoxFit.cover,
+                //                     ),
+                //                   ),
+                //                 ),
+                //                 Positioned(
+                //                   top: 4,
+                //                   right: 4,
+                //                   child: InkWell(
+                //                     onTap: () {
+                //                       setState(() {
+                //                         beforePhotos.removeAt(index);
+                //                       });
+                //                     },
+                //                     child: Container(
+                //                       decoration: BoxDecoration(
+                //                         color: Colors.black54,
+                //                         shape: BoxShape.circle,
+                //                       ),
+                //                       child: const Icon(
+                //                         Icons.delete,
+                //                         size: 20,
+                //                         color: Colors.red,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ],
+                //             );
+                //           },
+                //         ),
+                //       )
+                //     : const Text(
+                //         "No photos uploaded yet.",
+                //         style: TextStyle(color: Colors.grey, fontSize: 16),
+                //       ),
                 const SizedBox(height: 24),
             
                 // Finish Button
@@ -278,12 +282,26 @@ class _Signup3State extends State<Signup3> with SingleTickerProviderStateMixin {
                     backgroundColor: appMainColor,
                     width: double.infinity,
                     text: "Finish",
-                    onPressed: () {
-                      _buttonController?.forward().then((value) {
-                       SharedPreferenceHelper(). saveUserLoggedIn(true);
-                        context.pushNamed("mainhome");
-                      });
-                    },
+                    onPressed: () async {
+  _buttonController?.forward().then((_) async {
+    try {
+      // Call signUpUserGoals and wait for it to complete
+      await authProvider.signUpUserGoals(
+        userid: 27,
+        fitnessLevelId: selectedLevel.id,
+        fitnessGoalId: selectedGoal.id,
+        // beforePhotos: beforePhotos,
+        callBack: () {
+          context.go('/mainhome'); // Navigate after the sign-up completes
+        },
+      );
+    } catch (e) {
+      // Handle any potential errors
+      Fluttertoast.showToast(msg: 'Error: $e');
+    }
+  });
+},
+
                   ),
                 ),
               ],

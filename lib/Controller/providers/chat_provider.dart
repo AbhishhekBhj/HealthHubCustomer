@@ -20,6 +20,21 @@ class ChatProvider extends ChangeNotifier {
     fetchLast10Messages();
   }
 
+  Future<void> editMessage(int messageId, String content) async {
+    try {
+      var success = await _messageRepo.editMessage(messageId: messageId, content: content);
+
+      if (success) {
+        fetchLast10Messages();
+        notifyListeners();
+      }
+    } catch (e) {
+      log("Error editing message: $e");
+    }
+  }
+
+  
+
   Future<void> deleteMessage(int messageId) async {
     try {
       var success = await _messageRepo.deleteMessage(messageId: messageId);
@@ -37,8 +52,8 @@ class ChatProvider extends ChangeNotifier {
   Future<void> fetchLast10Messages() async {
     _setLoading(true);
     try {
-      var conversation = await _messageRepo.getLast10Messages(senderId: 6, receiverId: 7);
-
+      var conversation =
+          await _messageRepo.getLast10Messages(senderId: 6, receiverId: 7);
 
       if (conversation != null && conversation.messages != null) {
         log("Messages fetched: ${conversation.messages}");
@@ -58,7 +73,9 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// Sends a message through the API and WebSocket
-  Future<bool> sendMessage(String message,) async {
+  Future<bool> sendMessage(
+    String message,
+  ) async {
     try {
       Message newMessage = Message(
         conversationId: 1,
@@ -83,21 +100,26 @@ class ChatProvider extends ChangeNotifier {
 
       if (!success) {
         // Handle message send failure (e.g., remove optimistic message)
-        
+
         _messages.remove(newMessage);
         notifyListeners();
         return false;
-      }
-      else{
-        try{
-          log("Adding sink");
-          channel.sink.add(jsonEncode(newMessage.toJson()));
-        }
-        catch(e){
+      } else {
+        try {
+          log("Adding sink in this message : ${jsonEncode(newMessage.toJson())}");
+          var mp = {
+            "conversationId": newMessage.conversationId,
+            "senderId": newMessage.senderId,
+            "receiverId": newMessage.receiverId,
+            "content": newMessage.content,
+            "sentAt": newMessage.sentAt?.toIso8601String(),
+          };
+          channel.sink.add(jsonEncode(mp));
+        } catch (e) {
           log("Error adding sink : $e");
           return false;
         }
-        
+
         notifyListeners();
         return true;
       }
@@ -121,7 +143,6 @@ class ChatProvider extends ChangeNotifier {
           senderId: jsonDecode(message)['SenderId'],
           receiverId: jsonDecode(message)['ReceiverId'],
           conversationId: jsonDecode(message)['ConversationId'],
-
         );
         _messages.add(decodedMessage);
         notifyListeners(); // Update the UI when new message arrives
@@ -134,9 +155,9 @@ class ChatProvider extends ChangeNotifier {
   /// Add or remove reaction to a message
   void addReaction(String reactionType, int index) {
     if (_messages[index].reaction == mapReaction(reactionType)) {
-      _messages[index].reaction = null;  // Toggle reaction off
+      _messages[index].reaction = null; // Toggle reaction off
     } else {
-      _messages[index].reaction = mapReaction(reactionType);  // Add reaction
+      _messages[index].reaction = mapReaction(reactionType); // Add reaction
     }
     notifyListeners();
   }
@@ -202,26 +223,25 @@ class Message {
     this.isRead,
     this.messageType,
     this.reaction,
-
     this.isDeleted,
     this.isUpdated,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    try{
+    try {
       return Message(
-      id: json['id'],
-      conversationId: json['conversationId'],
-      senderId: json['senderId'],
-      receiverId: json['receiverId'],
-      content: json['content'],
-      sentAt: json['sentAt'] != null ? DateTime.parse(json['sentAt']) : null,
-      isRead: json['isRead'],
-      messageType: json['messageType'],
-      reaction: json['reaction'],
-      isDeleted: json['isDeleted'],
-      isUpdated: json['isUpdated'],
-    );
+        id: json['id'],
+        conversationId: json['conversationId'],
+        senderId: json['senderId'],
+        receiverId: json['receiverId'],
+        content: json['content'],
+        sentAt: json['sentAt'] != null ? DateTime.parse(json['sentAt']) : null,
+        isRead: json['isRead'],
+        messageType: json['messageType'],
+        reaction: json['reaction'],
+        isDeleted: json['isDeleted'],
+        isUpdated: json['isUpdated'],
+      );
     } catch (e) {
       log("Error in message parsing: $e");
       return Message(); // Return an empty message on error

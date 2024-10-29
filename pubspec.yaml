@@ -69,7 +69,9 @@ dependencies:
   dio:
   flutter_background_service: ^5.0.10
   flutter_background_service_ios: ^5.0.3
+  flutter_background_service_android: 
   web_socket_channel: ^3.0.1
+  # flutter_zoom_videosdk: 
 
 dev_dependencies:
   hive_generator:  ^1.1.3

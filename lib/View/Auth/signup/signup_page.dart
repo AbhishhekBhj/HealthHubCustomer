@@ -80,25 +80,25 @@ class _SignUpMainPageState extends State<SignUpMainPage>
                   HealthhubCustomButton(
                     height: height * 0.05,
                     text: 'Sign Up with Google',
-                    onPressed: () {
-                          context.pushNamed('signup2');
+                    onPressed: () async {
 
-//                       signin().then((value) {
-//                         if (value != null) {
-//                           userCredential = value;
-//                           log("User Signed In Successfully ${value}");
-//                           // context.pushNamed('signup2');
-//                           context.pushNamed(
-//   'signup2',
-//   pathParameters: {
-//     'imageUrl': '${userCredential?.user?.photoURL}',  // Pass the imageUrl
-//     'username': '${userCredential?.user?.displayName}',  // Pass the username
-//   },
+                      context.pushNamed("signup2", pathParameters: {
+                          'email': '${"hamroquizapp@gmail.com"}',  // Pass the imageUrl
+                          
+                        });
 
-  
-// );
+                      // var userData = await signInWithGoogle(context: context);
 
-//                         }
+                      // log(userData.toString());
+
+                      // if(userData!=null){
+                      //   context.pushNamed("signup2", pathParameters: {
+                      //     'email': '${userData.user?.email}',  // Pass the imageUrl
+                          
+                      //   });
+                      // }
+
+
 //                       });
                     
                     
