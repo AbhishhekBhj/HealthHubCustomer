@@ -1,23 +1,23 @@
 class FoodItemResponse {
-  String? id;
-  int? statusCode;
-  String? message;
+  dynamic? id;
+  dynamic? statusCode;
+  dynamic? message;
   FoodItemData? data;
 
   FoodItemResponse({this.id, this.statusCode, this.message, this.data});
 
-  FoodItemResponse.fromJson(Map<String, dynamic> json) {
+  FoodItemResponse.fromJson(Map<dynamic, dynamic> json) {
     id = json['id'];
     statusCode = json['statusCode'];
     message = json['message'];
     data = json['data'] != null ? FoodItemData.fromJson(json['data']) : null;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['statusCode'] = this.statusCode;
-    data['message'] = this.message;
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = <dynamic, dynamic>{};
+    data['id'] = id;
+    data['statusCode'] = statusCode;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -26,12 +26,12 @@ class FoodItemResponse {
 }
 
 class FoodItemData {
-  String? id;
-  int? totalRecords;
-  int? pageSize;
-  int? currentPage;
-  int? totalPages;
-  FoodItem? items;
+  dynamic? id;
+  dynamic? totalRecords;
+  dynamic? pageSize;
+  dynamic? currentPage;
+  dynamic? totalPages;
+  List<FoodItems>? items;
 
   FoodItemData({
     this.id,
@@ -42,69 +42,46 @@ class FoodItemData {
     this.items,
   });
 
-  FoodItemData.fromJson(Map<String, dynamic> json) {
+  FoodItemData.fromJson(Map<dynamic, dynamic> json) {
     id = json['id'];
     totalRecords = json['totalRecords'];
     pageSize = json['pageSize'];
     currentPage = json['currentPage'];
     totalPages = json['totalPages'];
-    items = json['items'] != null ? FoodItem.fromJson(json['items']) : null;
+    if (json['items'] != null) {
+      items = (json['items'] as List).map((item) => FoodItems.fromJson(item)).toList();
+    }
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['totalRecords'] = this.totalRecords;
-    data['pageSize'] = this.pageSize;
-    data['currentPage'] = this.currentPage;
-    data['totalPages'] = this.totalPages;
-    if (this.items != null) {
-      data['items'] = this.items!.toJson();
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = <dynamic, dynamic>{};
+    data['id'] = id;
+    data['totalRecords'] = totalRecords;
+    data['pageSize'] = pageSize;
+    data['currentPage'] = currentPage;
+    data['totalPages'] = totalPages;
+    if (items != null) {
+      data['items'] = items!.map((item) => item.toJson()).toList();
     }
     return data;
   }
 }
 
-class FoodItem {
-  String? id;
-  List<FoodItems>? values;
-
-  FoodItem({this.id, this.values});
-
-  FoodItem.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    if (json['values'] != null) {
-      values = <FoodItems>[];
-      json['values'].forEach((v) {
-        values!.add(FoodItems.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    if (this.values != null) {
-      data['values'] = this.values!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
 
 class FoodItems {
-  String? id;
-  String? foodName;
-  int? calories;
-  double? protein;
-  double? carbohydrates;
-  double? fats;
-  String? description;
-  String? imageUrl;
-  double? sugarContent;
-  int? cholesterol;
-  int? recommendedServingSize;
-  String? createdAt;
-  String? updatedAt;
+  dynamic? id;
+  dynamic? foodName;
+  dynamic? calories;
+  dynamic? protein;
+  dynamic? carbohydrates;
+  dynamic? fats;
+  dynamic? description;
+  dynamic? imageUrl;
+  dynamic? sugarContent;
+  dynamic? cholesterol;
+  dynamic? recommendedServingSize;
+  dynamic? createdAt;
+  dynamic? updatedAt;
 
   FoodItems({
     this.id,
@@ -122,7 +99,7 @@ class FoodItems {
     this.updatedAt,
   });
 
-  FoodItems.fromJson(Map<String, dynamic> json) {
+  FoodItems.fromJson(Map<dynamic, dynamic> json) {
     id = json['id'];
     foodName = json['food_name'];
     calories = json['calories'];
@@ -138,21 +115,21 @@ class FoodItems {
     updatedAt = json['updated_at'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['food_name'] = this.foodName;
-    data['calories'] = this.calories;
-    data['protein'] = this.protein;
-    data['carbohydrates'] = this.carbohydrates;
-    data['fats'] = this.fats;
-    data['description'] = this.description;
-    data['image_url'] = this.imageUrl;
-    data['sugar_content'] = this.sugarContent;
-    data['cholesterol'] = this.cholesterol;
-    data['recommended_serving_size'] = this.recommendedServingSize;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = <dynamic, dynamic>{};
+    data['id'] = id;
+    data['food_name'] = foodName;
+    data['calories'] = calories;
+    data['protein'] = protein;
+    data['carbohydrates'] = carbohydrates;
+    data['fats'] = fats;
+    data['description'] = description;
+    data['image_url'] = imageUrl;
+    data['sugar_content'] = sugarContent;
+    data['cholesterol'] = cholesterol;
+    data['recommended_serving_size'] = recommendedServingSize;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:healthhubcustomer/View/Home/Activities/activites_page.dart';
+import 'package:healthhubcustomer/View/Home/FoodLog/food_log.dart';
 import 'package:healthhubcustomer/View/Home/HomeOptions/home_options.dart';
 import 'package:healthhubcustomer/View/Home/Side/side_options_page.dart';
 import 'package:healthhubcustomer/View/Home/trainer/trainer_page.dart';

@@ -7,7 +7,7 @@ import 'package:healthhubcustomer/View/Home/Side/Wallet/wallet_page.dart';
 
 import '../../View/Auth/login/login_page.dart';
 import '../../View/Chat/chat_page.dart';
-import '../../View/Home/Activities/activites_page.dart';
+import '../../View/Home/FoodLog/food_log.dart';
 import '../../View/Home/Side/Refer&Earn/refer_earn.dart';
 import '../../View/Home/Side/Wallet/wallet_skins_page.dart';
 import '../../View/Home/Side/side_options_page.dart';

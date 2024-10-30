@@ -13,19 +13,21 @@ class FoodRepo {
 Future<FoodCategoryResponse?> getFoodItemsCategory() async {
   try {
     final response = await ApiService().get("Food/categories");
-    final decodedResponse = response.data;
+    final decodedResponse = jsonDecode(response.toString());
+    var statusCode = decodedResponse["statusCode"];
+    var message = decodedResponse["message"];
+    
 
     
 
-    // Safely extract status code and message
-    final statusCode = decodedResponse['statusCode'] as int?;
-    final message = decodedResponse['message']?.toString();
+   
 
     if (statusCode == 200) {
-      final data = decodedResponse['data']?['data'];
-      if (data != null) {
+      
+      
+      if (decodedResponse != null) {
         
-        return FoodCategoryResponse.fromJson(data as Map<String, dynamic>);
+        return FoodCategoryResponse.fromJson(decodedResponse);
       } else {
         log("Error: No data found in the response");
       }
@@ -59,6 +61,35 @@ Future<FoodCategoryResponse?> getFoodItemsCategory() async {
         log("Error: $message (Status Code: $statusCode)");
       }
         } catch (e, stackTrace) {
+      // Log the error and show a toast/snackbar
+      Fluttertoast.showToast(msg: "Failed to load data: ${e.toString()}");
+      log("Error: ${e.toString()}", stackTrace: stackTrace);
+      rethrow; // Re-throw the error for further handling if necessary
+    }
+    return null; // Return null in case of any failure
+  }
+
+  Future<FoodItemResponse?> getFoodItemByTheName({required String foodName, required int pageNumber, required int pageSize}) async {
+    try {
+
+      log("Searching for food item api: $foodName");
+      var response = await ApiService().get("/Food/getFoodItemByName/$foodName/$pageNumber/$pageSize");
+
+      log("This is the url: /Food/getFoodItemByName/$foodName/$pageSize/$pageNumber");
+
+      var decodedResponse = jsonDecode(response.toString());
+      var statusCode = decodedResponse["statusCode"];
+      var message = decodedResponse["message"];
+
+      if (statusCode == 200) {
+        var data = FoodItemResponse.fromJson(decodedResponse);
+        return data;
+      } else {
+        // Show a toast or snackbar if status code isn't 200
+        Fluttertoast.showToast(msg: message ?? "Something went wrong.");
+        log("Error: $message (Status Code: $statusCode)");
+      }
+    } catch (e, stackTrace) {
       // Log the error and show a toast/snackbar
       Fluttertoast.showToast(msg: "Failed to load data: ${e.toString()}");
       log("Error: ${e.toString()}", stackTrace: stackTrace);
