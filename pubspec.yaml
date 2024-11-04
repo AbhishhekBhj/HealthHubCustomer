@@ -71,6 +71,9 @@ dependencies:
   flutter_background_service_ios: ^5.0.3
   flutter_background_service_android: 
   web_socket_channel: ^3.0.1
+  syncfusion_flutter_charts: ^27.1.57
+  intl: ^0.19.0
+  local_auth: ^2.3.0
   # flutter_zoom_videosdk: 
 
 dev_dependencies:

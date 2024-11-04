@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:healthhubcustomer/Model/data/food_item.dart';
+import 'package:healthhubcustomer/View/widgets/buttons/healthhub_custom_button.dart';
+import 'package:healthhubcustomer/colors/colors.dart';
 
 class CustomFoodListTile extends StatefulWidget {
   const CustomFoodListTile({
@@ -119,6 +122,19 @@ class _CustomFoodListTileState extends State<CustomFoodListTile> {
                   Icons.medical_information,
                 ),
                 const SizedBox(height: 16),
+
+
+                HealthhubCustomButton(
+                  backgroundColor: appMainColor,
+                  textColor: Colors.white,
+                  text: "Log Calories",
+                  onPressed: () {
+                    context.pushNamed("logCalories", extra: widget.foodItem);
+
+                //  context.goNamed("logCalories",extra: widget.foodItem);
+                  },
+
+                )
                 
               ],
             ),

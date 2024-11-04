@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../Controller/providers/theme_provider.dart';
 import '../../colors/colors.dart';
+import 'CaloricSummary/caloric_summary.dart';
 
 class MainHomePage extends StatefulWidget {
   MainHomePage({super.key});
@@ -26,7 +27,7 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
 
   final List<Widget> _pages = [
     const HomeOptions(),
-     FoodLogPage(),
+     CaloricSummary(),
     const TrainerPage(),
     const SideOptionsPage(),
   ];
@@ -123,17 +124,7 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
         onTap: (index) => onTap(index),
         splashColor: isLightTheme ? appMainColor : appWhiteColor,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Center action button
-        },
-        child:  Icon(Icons.add, color: isLightTheme? appMainColor:Colors.black,),
-        backgroundColor: isLightTheme ? appWhiteColor : appWhiteColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15), // Rounded look for the button
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+     
     );
   }
 }

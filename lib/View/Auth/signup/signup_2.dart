@@ -305,8 +305,7 @@ class _Signup2State extends State<Signup2> with SingleTickerProviderStateMixin {
                       log("ActivityLevelId: ${selectedActivityLevel!.id}");
                       log("Image: ${image!.path}");
 
-                      // Get.to(() => const Signup3());
-                      // context.pushNamed('signup3');
+                     
                  await     authProvider.signUpUserProfile(
                   
                   

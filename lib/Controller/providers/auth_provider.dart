@@ -21,6 +21,7 @@ class AuthProvider extends ChangeNotifier {
 
   void setUser(User user) {
     _user = user;
+    log("this is the user that i have saved ${user.toJson().toString()}");
     notifyListeners();
   }
 
@@ -41,6 +42,8 @@ class AuthProvider extends ChangeNotifier {
       if (userResponse != null) {
         setUser(userResponse);
         SharedPreferenceHelper().saveUserLoggedIn(true);
+        SharedPreferenceHelper().saveUser(userResponse);
+
       }
       return userResponse;
     } catch (e) {

@@ -5,12 +5,14 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 // import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:healthhubcustomer/Controller/providers/auth_provider.dart';
 import 'package:healthhubcustomer/Controller/providers/chat_provider.dart';
+import 'package:healthhubcustomer/Controller/providers/local_auth_provider.dart';
 import 'package:healthhubcustomer/Services/active_background_services.dart';
 import 'package:healthhubcustomer/Services/notification_services.dart';
 import 'package:healthhubcustomer/firebase_options.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'Controller/providers/calories_provider.dart';
 import 'Controller/providers/day_phase_provider.dart';
 import 'Controller/providers/food_provider.dart';
 import 'Controller/providers/step_counter_provider.dart';
@@ -67,6 +69,11 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ChangeNotifierProvider(create: (context) => ChatProvider()),
       ChangeNotifierProvider(create: (context) => FoodProvider()),
+      ChangeNotifierProvider(create: (context) => CaloriesProvider()),
+      ChangeNotifierProvider(create: (context) => LocalAuthProvider()),
+
+
+
 
       ChangeNotifierProvider(
         create: (context) => AuthProvider(),
@@ -110,7 +117,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
       routerConfig: router,
-      title: 'Flutter Theme Demo',
+      title: 'Health Hub User App',
     );
   }
 }

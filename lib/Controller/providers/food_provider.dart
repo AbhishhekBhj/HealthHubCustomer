@@ -3,21 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:healthhubcustomer/Controller/repositories/food_repo.dart';
 import 'package:healthhubcustomer/Model/food_category.dart';
 import '../../Model/data/food_item.dart';
+import '../../Model/data/meal_time_response.dart';
 
 class FoodProvider extends ChangeNotifier {
   List<FoodCategoryData> _foodCategories = [];
   List<FoodItems> _foodItems = [];
+  List<MealTimeData> _mealTimes = [];
   bool _isFoodItemLoading = false;
   bool _isInitialLoading = false; // New state for initial load
   String? _error;
   
   final FoodRepo _foodRepo = FoodRepo();
+
+
+  List<MealTimeData> get mealTimes => _mealTimes;
   
   List<FoodCategoryData> get foodCategories => _foodCategories;
   List<FoodItems> get foodItems => _foodItems;
   bool get isFoodItemLoading => _isFoodItemLoading;
   bool get isInitialLoading => _isInitialLoading;
   String? get error => _error;
+
+
+
+  void setMealTimes(List<MealTimeData> mealTimes) {
+    _mealTimes = mealTimes;
+    notifyListeners();
+  }
+
+  
 
   void setFoodCategories(List<FoodCategoryData> foodCategories) {
     _foodCategories = foodCategories;
@@ -32,6 +46,16 @@ class FoodProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+
+
+  void getMealTimes() async {
+    final value = await _foodRepo.getMealTimes();
+    
+      setMealTimes(value);
+      notifyListeners();
+    }
+  
 
  void sortBy(String sortingFactor, {bool ascending = true}) {
   // Define a mapping from sorting factors to the appropriate property accessors
@@ -58,6 +82,7 @@ class FoodProvider extends ChangeNotifier {
 
 
   Future<void> getFoodCategories() async {
+     getMealTimes();
     final value = await _foodRepo.getFoodItemsCategory();
     if (value != null) {
       setFoodCategories(value.data!);

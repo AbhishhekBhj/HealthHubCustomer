@@ -133,3 +133,62 @@ class FoodItems {
     return data;
   }
 }
+
+class FoodItemCategoryResponseModel {
+  dynamic id;
+  dynamic statusCode;
+  dynamic message;
+  List<FoodItemCategoryData>? data;
+
+  FoodItemCategoryResponseModel({
+    this.id,
+    this.statusCode,
+    this.message,
+    this.data,
+  });
+
+  FoodItemCategoryResponseModel.fromJson(Map<dynamic, dynamic> json) {
+    id = json['id'];
+    statusCode = json['statusCode'];
+    message = json['message'];
+    if (json['data'] != null) {
+      data = (json['data'] as List)
+          .map((item) => FoodItemCategoryData.fromJson(item))
+          .toList();
+    }
+  }
+
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = <dynamic, dynamic>{};
+    data['id'] = id;
+    data['statusCode'] = statusCode;
+    data['message'] = message;
+    if (this.data != null) {
+      data['data'] = this.data!.map((item) => item.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class FoodItemCategoryData {
+  final dynamic categoryId;
+  final dynamic categoryName;
+
+  FoodItemCategoryData({
+    this.categoryId,
+    this.categoryName,
+  });
+
+  FoodItemCategoryData.fromJson(Map<dynamic, dynamic> json)
+      : categoryId = json['categoryId'],
+        categoryName = json['categoryName'];
+
+  Map<dynamic, dynamic> toJson() {
+    return {
+      'categoryId': categoryId,
+      'categoryName': categoryName,
+    };
+  }
+}
+
+

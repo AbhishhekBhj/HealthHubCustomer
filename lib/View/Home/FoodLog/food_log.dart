@@ -108,9 +108,7 @@ class _FoodLogPageState extends State<FoodLogPage> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.1,
-                child: buildFoodItemCategoryBoxes(foodProvider)),
+              
               const SizedBox(height: 16.0),
               Expanded(
                 child: Consumer<FoodProvider>(
@@ -205,7 +203,7 @@ class _FoodLogPageState extends State<FoodLogPage> {
             mainAxisAlignment: MainAxisAlignment.center, // Center text
             children: [
               // Optionally add an icon here, you can use a suitable icon for the category
-              Icon(
+              const Icon(
                 Icons.category, // Replace with an appropriate icon
                 size: 24,
                 color: Colors.white, // Adjust icon color as needed
@@ -213,7 +211,7 @@ class _FoodLogPageState extends State<FoodLogPage> {
               const SizedBox(height: 8), // Spacing between icon and text
               Text(
                 foodProvider.foodCategories[index].categoryName??"",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold, // Make text bold
                   color: Colors.white, // Text color
