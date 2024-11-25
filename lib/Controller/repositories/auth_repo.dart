@@ -17,6 +17,36 @@ class AuthRepo {
 
   SharedPreferenceHelper _sharedPreferenceHelper = SharedPreferenceHelper();
 
+
+
+Future<User?> getUserProfile() async{
+
+  try{
+
+    var response = await _apiService.get(ApiConstants.getUserProfile);
+
+    if(response.statusCode == 200 || response.statusCode == 201){
+      var data = response.data;
+      if(data['statusCode'] == 200 || data['statusCode'] == 201){
+        return User.fromJson(data['data']);
+      }
+    }
+    else{
+      Fluttertoast.showToast(msg: 'Failed to get user profile');
+      return null;
+    }
+
+
+  }
+  catch(e,s){
+    log('Error getting user profile: $e', stackTrace: s);
+    Fluttertoast.showToast(msg: 'Error: $e');
+    rethrow;
+  }
+
+}
+
+
 Future<User?> loginUser({required String email}) async {
   try {
     final body = {'email': email, 'password': 'password'};

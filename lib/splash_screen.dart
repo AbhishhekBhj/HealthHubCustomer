@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:healthhubcustomer/Controller/providers/auth_provider.dart';
 import 'package:healthhubcustomer/Services/notification_services.dart';
 import 'package:healthhubcustomer/View/OnBoarding/onboarding_base.dart';
 import 'package:healthhubcustomer/utils/app_constants.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
 import 'package:healthhubcustomer/utils/shared_preference_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import 'View/Auth/login/login_page.dart';
 import "dart:developer";
@@ -27,6 +29,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _animation;
 
   late   NotificationServices _notificationServices;
+  late AuthProvider _authProvider;
 
 
  requestPermissions() async {
@@ -46,6 +49,8 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
+    _authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     _notificationServices = NotificationServices(context);
 
@@ -90,6 +95,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   navigateFromSplashScreen() async
   {
+
+
+
     var hasSeen = await _sharedPreferenceHelper.getUserHasSeenOnboarding();
     var hasLogin = await _sharedPreferenceHelper.getUserLoggedIn();
 
@@ -98,6 +106,8 @@ class _SplashScreenState extends State<SplashScreen>
     if (hasSeen) {
       log("Seen");
       if (hasLogin) {
+      _authProvider.getUserProfile();
+
         log("MainHome");
         context.pushNamed('mainhome');
       } else {

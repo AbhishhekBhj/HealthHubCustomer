@@ -1,7 +1,15 @@
+
+import 'package:hive_flutter/hive_flutter.dart';
+
+@HiveType(typeId: 4)
 class FoodItemResponse {
+  @HiveField(0)
   dynamic? id;
+  @HiveField(1)
   dynamic? statusCode;
+  @HiveField(2)
   dynamic? message;
+  @HiveField(3)
   FoodItemData? data;
 
   FoodItemResponse({this.id, this.statusCode, this.message, this.data});
@@ -25,12 +33,19 @@ class FoodItemResponse {
   }
 }
 
+@HiveType(typeId: 5)
 class FoodItemData {
+  @HiveField(0)
   dynamic? id;
+  @HiveField(1)
   dynamic? totalRecords;
+  @HiveField(2)
   dynamic? pageSize;
+  @HiveField(3)
   dynamic? currentPage;
+  @HiveField(4)
   dynamic? totalPages;
+  @HiveField(5)
   List<FoodItems>? items;
 
   FoodItemData({
@@ -67,7 +82,7 @@ class FoodItemData {
   }
 }
 
-
+@HiveType(typeId: 6)
 class FoodItems {
   dynamic? id;
   dynamic? foodName;

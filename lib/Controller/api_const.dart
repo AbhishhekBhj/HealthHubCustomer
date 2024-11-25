@@ -4,4 +4,9 @@ class ApiConstants{
   static const String userSignupGoals = 'User/user/register/goals';
   static const String userLogin = '/User/login';
 
+
+
+
+  static const String getUserProfile = 'User/getProfile';
+
 }

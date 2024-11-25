@@ -35,6 +35,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 
 Future<void> main() async {
+
+  await Hive.initFlutter();
   // debugRepaintRainbowEnabled  = true;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

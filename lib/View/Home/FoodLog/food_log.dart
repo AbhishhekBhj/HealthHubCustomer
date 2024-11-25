@@ -7,7 +7,11 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class FoodLogPage extends StatefulWidget {
-  const FoodLogPage({super.key});
+   FoodLogPage({super.key, this.isFromEdit=false, this.callBack});
+
+
+  bool? isFromEdit;
+  Function? callBack;
 
   @override
   _FoodLogPageState createState() => _FoodLogPageState();
@@ -98,7 +102,11 @@ class _FoodLogPageState extends State<FoodLogPage> {
               TextField(
                 controller: foodNameController,
                 decoration: InputDecoration(
-                  hintText: "Search for a food item",
+                  hintText:
+                widget.isFromEdit == true ? "Edit food item" : "Search for a food item"
+,
+                  
+                  
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: () => searchFood(foodProvider),
@@ -164,7 +172,10 @@ class _FoodLogPageState extends State<FoodLogPage> {
                             }
 
                             final foodItem = foodProvider.foodItems[index];
-                            return CustomFoodListTile(foodItem: foodItem);
+                            return CustomFoodListTile(foodItem: foodItem, isFromFoodItem: widget.isFromEdit,
+                            callBack: widget.callBack,
+                            
+                            );
                           },
                         ),
                       ),

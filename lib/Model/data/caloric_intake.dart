@@ -27,20 +27,25 @@ class CaloricIntakeData {
   List<CaloricIntakeDetail>? details;
   int? totalCaloriesForTheDay;
   int? remainingCalories;
+  TotalData? totalData;
+
 
   CaloricIntakeData({
     required this.totalCalories,
     this.details,
     this.totalCaloriesForTheDay,
     this.remainingCalories,
+    this.totalData,
   });
 
   factory CaloricIntakeData.fromJson(Map<String, dynamic> json) {
+
     var detailsFromJson = json['details'] as List<dynamic>?;
     List<CaloricIntakeDetail>? detailsList =
         detailsFromJson?.map((item) => CaloricIntakeDetail.fromJson(item)).toList();
 
     return CaloricIntakeData(
+      totalData: json['totalData'] != null ? TotalData.fromJson(json['totalData']) : null,
       totalCalories: json['totalCalories'],
       details: detailsList,
       totalCaloriesForTheDay: json['totalCaloriesForTheDay'],
@@ -51,7 +56,11 @@ class CaloricIntakeData {
 
 class CaloricIntakeDetail {
   int id; // Removed final
-  FoodItems? foodItem; // Make sure the FoodItem class is properly defined
+  FoodItems? foodItem;
+
+  int? servingSizeConsumed;
+  
+  
   int? totalCalories;
   DateTime? createdAt;
   int? mealTimeId;
@@ -64,12 +73,17 @@ class CaloricIntakeDetail {
     this.totalCalories,
     this.createdAt,
     this.mealTimeId,
-    this.isFromMeal
+    this.isFromMeal,
+    this.servingSizeConsumed,
 
   });
 
   factory CaloricIntakeDetail.fromJson(Map<String, dynamic> json) {
     return CaloricIntakeDetail(
+
+      servingSizeConsumed: json['servingSizeConsumed'],
+
+
       isFromMeal: json['isFromMeal'],
       mealTimeId: json['mealTimeId'],
       id: json['id'],
@@ -79,3 +93,33 @@ class CaloricIntakeDetail {
     );
   }
 }
+
+class TotalData{
+  dynamic totalCalories;
+  dynamic totalProtein;
+  dynamic totalCarbs;
+  dynamic totalFat;
+  dynamic totalSugar;
+  dynamic totalCholesterol;
+
+  TotalData({
+    this.totalCalories,
+    this.totalProtein,
+    this.totalCarbs,
+    this.totalFat,
+    this.totalSugar,
+    this.totalCholesterol
+  });
+
+  factory TotalData.fromJson(Map<String, dynamic> json) {
+    return TotalData(
+      totalCalories: json['totalCalories'],
+      totalProtein: json['totalProtein'],
+      totalCarbs: json['totalCarbohydrates'],
+      totalFat: json['totalFats'],
+      totalSugar: json['totalSugar'],
+      totalCholesterol: json['totalCholesterol'],
+    );
+  }
+}
+

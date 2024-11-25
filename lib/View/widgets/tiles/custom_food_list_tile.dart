@@ -5,13 +5,16 @@ import 'package:healthhubcustomer/View/widgets/buttons/healthhub_custom_button.d
 import 'package:healthhubcustomer/colors/colors.dart';
 
 class CustomFoodListTile extends StatefulWidget {
-  const CustomFoodListTile({
+   CustomFoodListTile({
     super.key,
     required this.foodItem,
+    this.isFromFoodItem=false,
+    this.callBack,
   });
   
   final FoodItems foodItem;
-
+    bool? isFromFoodItem;
+    Function? callBack;
   @override
   State<CustomFoodListTile> createState() => _CustomFoodListTileState();
 }
@@ -127,9 +130,21 @@ class _CustomFoodListTileState extends State<CustomFoodListTile> {
                 HealthhubCustomButton(
                   backgroundColor: appMainColor,
                   textColor: Colors.white,
-                  text: "Log Calories",
+                  text:
+
+                  widget.isFromFoodItem==true?"Select Food":"Log Calories",
+                  
+                  
+                  
                   onPressed: () {
+                    if(widget.isFromFoodItem==true){
+                      widget.callBack!(widget.foodItem);
+                      context.pop();
+                    }
+                    else{
                     context.pushNamed("logCalories", extra: widget.foodItem);
+
+                    }
 
                 //  context.goNamed("logCalories",extra: widget.foodItem);
                   },

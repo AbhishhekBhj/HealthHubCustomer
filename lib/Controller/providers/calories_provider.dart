@@ -16,6 +16,10 @@ class CaloriesProvider extends ChangeNotifier{
 
 
 
+  
+
+
+
   void getTodaysCaloricIntake() async{
     var data = await caloriesRepo.getTodaysCaloricIntake();
     if(data != null){

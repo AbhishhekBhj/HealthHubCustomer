@@ -12,26 +12,21 @@ class FoodProvider extends ChangeNotifier {
   bool _isFoodItemLoading = false;
   bool _isInitialLoading = false; // New state for initial load
   String? _error;
-  
+
   final FoodRepo _foodRepo = FoodRepo();
 
-
   List<MealTimeData> get mealTimes => _mealTimes;
-  
+
   List<FoodCategoryData> get foodCategories => _foodCategories;
   List<FoodItems> get foodItems => _foodItems;
   bool get isFoodItemLoading => _isFoodItemLoading;
   bool get isInitialLoading => _isInitialLoading;
   String? get error => _error;
 
-
-
   void setMealTimes(List<MealTimeData> mealTimes) {
     _mealTimes = mealTimes;
     notifyListeners();
   }
-
-  
 
   void setFoodCategories(List<FoodCategoryData> foodCategories) {
     _foodCategories = foodCategories;
@@ -47,42 +42,38 @@ class FoodProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   void getMealTimes() async {
     final value = await _foodRepo.getMealTimes();
-    
-      setMealTimes(value);
-      notifyListeners();
-    }
-  
 
- void sortBy(String sortingFactor, {bool ascending = true}) {
-  // Define a mapping from sorting factors to the appropriate property accessors
-  final Map<String, num Function(FoodItems)> factorMap = {
-    "Name": (item) => item.foodName!.length.toDouble(),
-    "Calories": (item) => item.calories ?? 0,
-    "Protein": (item) => item.protein ?? 0,
-    "Carbs": (item) => item.carbohydrates ?? 0,
-    "Fat": (item) => item.fats ?? 0,
-  };
-
-  // Check if the sortingFactor exists in our map
-  if (factorMap.containsKey(sortingFactor)) {
-    _foodItems.sort((a, b) {
-      final comparison = factorMap[sortingFactor]!(a).compareTo(factorMap[sortingFactor]!(b));
-      return ascending ? comparison : -comparison; // Reverse the comparison for descending order
-    });
+    setMealTimes(value);
     notifyListeners();
   }
-}
 
+  void sortBy(String sortingFactor, {bool ascending = true}) {
+    // Define a mapping from sorting factors to the appropriate property accessors
+    final Map<String, num Function(FoodItems)> factorMap = {
+      "Name": (item) => item.foodName!.length.toDouble(),
+      "Calories": (item) => item.calories ?? 0,
+      "Protein": (item) => item.protein ?? 0,
+      "Carbs": (item) => item.carbohydrates ?? 0,
+      "Fat": (item) => item.fats ?? 0,
+    };
 
-
-
+    // Check if the sortingFactor exists in our map
+    if (factorMap.containsKey(sortingFactor)) {
+      _foodItems.sort((a, b) {
+        final comparison = factorMap[sortingFactor]!(a)
+            .compareTo(factorMap[sortingFactor]!(b));
+        return ascending
+            ? comparison
+            : -comparison; // Reverse the comparison for descending order
+      });
+      notifyListeners();
+    }
+  }
 
   Future<void> getFoodCategories() async {
-     getMealTimes();
+    getMealTimes();
     final value = await _foodRepo.getFoodItemsCategory();
     if (value != null) {
       setFoodCategories(value.data!);
@@ -96,8 +87,8 @@ class FoodProvider extends ChangeNotifier {
   }
 
   Future<void> getFoodItemByName({
-    required String foodName, 
-    required int pageNumber, 
+    required String foodName,
+    required int pageNumber,
     required int pageSize,
     bool isNewSearch = false,
   }) async {

@@ -21,8 +21,16 @@ class AuthProvider extends ChangeNotifier {
 
   void setUser(User user) {
     _user = user;
-    log("this is the user that i have saved ${user.toJson().toString()}");
+
+    log('User set: ${user.toString()}');
+    
     notifyListeners();
+  }
+
+  void getUser() async {
+    var user = _user;
+    log('Getting user ${user.toJson().toString()}');
+
   }
 
   void setLoading(bool loading) {
@@ -33,6 +41,25 @@ class AuthProvider extends ChangeNotifier {
   void clearUser() {
     _user = User();
     notifyListeners();
+  }
+
+
+
+  void getUserProfile() async{
+    log('Getting user profile');
+    try{
+      var user = await AuthRepo().getUserProfile();
+      if(user != null){
+        setUser(user);
+        SharedPreferenceHelper().saveUser(user);
+
+         getUser();
+      }
+    }
+    catch(e){
+      log('Error getting user profile: $e');
+      Fluttertoast.showToast(msg: 'Error getting user profile: $e');
+    }
   }
 
   Future<User?> loginUser({required String email}) async {

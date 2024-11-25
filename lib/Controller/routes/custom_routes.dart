@@ -14,6 +14,7 @@ import '../../Model/data/food_item.dart';
 import '../../View/Auth/login/login_page.dart';
 import '../../View/Chat/chat_page.dart';
 import '../../View/Home/CaloricSummary/caloric_summary.dart';
+import '../../View/Home/CaloricSummary/macro_goals.dart';
 import '../../View/Home/FoodLog/food_log.dart';
 import '../../View/Home/Side/Refer&Earn/refer_earn.dart';
 import '../../View/Home/Side/Wallet/wallet_skins_page.dart';
@@ -85,11 +86,25 @@ final router = GoRouter(routes: [
     name: "refer",
     builder: (context, state) => const ReferEarn(),
   ),
-  GoRoute(
-    path: "/foodLog",
-    name: "foodLog",
-    builder: (context, state) => FoodLogPage(),
-  ),
+ GoRoute(
+  path: "/foodLog",
+  name: "foodLog",
+  builder: (context, state) {
+    // Extracting the arguments from state.extra
+    var arguments = state.extra as Map<String, dynamic>?;
+
+    // Checking if arguments are not null and extracting values
+    bool isFromEdit = arguments?['isFromEdit'] ?? false;
+    Function? callBack = arguments?['callBack'];
+
+    // Passing the extracted values to FoodLogPage
+    return FoodLogPage(
+      isFromEdit: isFromEdit,
+      callBack: callBack,
+    );
+  },
+),
+
   GoRoute(
     path: "/walletPage",
     name: "walletPage",
@@ -137,6 +152,26 @@ final router = GoRouter(routes: [
     final intakeData = state.extra as CaloricIntakeDetail;
     return IndividaulIntake(caloricIntakeData: intakeData);
   }
+  
+  ),
+
+
+
+ GoRoute(
+  path: "/macroGoalsGraphPage",
+  name: "macroGoalsGraphPage",
+  builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>;
+    final userAchievedMap = data["userAchievedMap"] as Map<String, dynamic>;
+    final userGoalsMap = data["userGoalsMap"] as Map<String, dynamic>;
+
+    return MacroGoals(
+      macroGoals: userGoalsMap, 
+      macroAchieved: userAchievedMap,
+    );
+  },
+
+
   
   )
 ]);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:healthhubcustomer/Controller/providers/auth_provider.dart';
 import 'package:healthhubcustomer/Controller/providers/theme_provider.dart';
 import 'package:healthhubcustomer/colors/colors.dart';
 import 'package:healthhubcustomer/utils/custom_textStyles.dart';
@@ -34,6 +35,10 @@ class _HomeOptionsState extends State<HomeOptions> {
     // Access the DayPhaseProvider
     final dayPhaseProvider = Provider.of<DayPhaseProvider>(context);
 
+    final user = Provider.of<AuthProvider>(context).user;
+
+    
+
     return SafeArea(
       
       child: Padding(
@@ -62,11 +67,20 @@ class _HomeOptionsState extends State<HomeOptions> {
                             Icon(dayPhaseProvider.icon, size: 30, color: dayPhaseProvider.color),
                           ],
                         ),
-                        const Text('Welcome back Abhishek', style: TextStyle(fontSize: 20)),
+                         Text('Welcome back ${user.userName??"N/A"}', style: TextStyle(fontSize: 20)),
                       ],
                     ),
                     const Spacer(),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.wallet)),
+                    Row(
+                      children: [
+                        IconButton(onPressed: () {}, icon: const Icon(Icons.wallet)),
+
+                        Text('Wallet: Rs. ${user.wallet?.balance ?? 0}', style: TextStyle(
+                          fontSize: 20,
+                          color: appMainColor,
+                        ),),
+                      ],
+                    ),
                   ],
                 ),
               ),
